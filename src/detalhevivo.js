@@ -2,9 +2,8 @@ import { getDb, setConfig } from './db.js';
 import { codigoDaTla, codigoDoIngles, codigoDoNome } from './flags.js';
 
 // Fonte do minuto + autores dos gols ao vivo: API publica da ESPN (gratis, sem
-// chave). A football-data (nosso tier) NAO traz minuto nem autores; a ESPN traz
-// os dois. O placar/estadoVivo continua vindo da football-data (livescore.js);
-// aqui e so o "enfeite" de site de esportes (minuto correndo + autor do gol).
+// chave). Traz minuto correndo, autores dos gols e estado do jogo (ao vivo /
+// encerrado). Alimenta /jogos e /artilheiros.
 const SCOREBOARD_BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
 const COPA = '20260611-20260719'; // intervalo da Copa inteira (so no backfill)
 
@@ -187,8 +186,8 @@ export async function sincronizaEspn(db, fetchFn = fetch, dates = COPA) {
   // continuam aparecendo na lista mesmo depois do apito final).
   const detalhe = { ...leDetalhes(db) };
   const agora = new Date().toISOString();
-  // o PLACAR ao vivo passa a vir da ESPN (scoreboard) — grava em resultados_ao_vivo
-  // (o agendador da football-data fica desligado). Manual (admin) ainda sobrepoe.
+  // o PLACAR ao vivo vem da ESPN (scoreboard) — grava em resultados_ao_vivo.
+  // Manual (admin) ainda sobrepoe.
   const upScore = db.prepare(
     'INSERT INTO resultados_ao_vivo (jogo_numero, gols_casa, gols_fora, status, atualizado_em) ' +
       'VALUES (?, ?, ?, ?, ?) ON CONFLICT(jogo_numero) DO UPDATE SET ' +

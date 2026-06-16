@@ -3,7 +3,7 @@ import { normalizaTime } from './scoring.js';
 // Mapa das 48 selecoes da Copa 2026.
 // code = arquivo da bandeira (ISO 3166-1 alpha-2, ou subdivisao gb-*).
 // nome = forma canonica usada para casar (via normalizaTime).
-// tla  = sigla FIFA de 3 letras usada pela API football-data.org.
+// tla  = sigla FIFA de 3 letras (usada p/ casar com a ESPN e outras fontes).
 // label = texto curto exibido no chip.
 const TIMES = [
   { code: 'de', tla: 'GER', nome: 'Alemanha' },

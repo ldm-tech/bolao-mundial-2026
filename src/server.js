@@ -26,7 +26,6 @@ import { bandeira } from './flags.js';
 import { carregaConfig as carregaCfgPremiacao, calculaPremios } from './premiacao.js';
 import { montaArtilheiros } from './artilheiros.js';
 import { leDetalhes, iniciaAgendadorDetalheVivo } from './detalhevivo.js';
-import { feedbackHabilitado, linearConfigurado, criaIssueLinear, rateLimitOk } from './feedback.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -54,7 +53,6 @@ app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 if (emProducao) app.set('trust proxy', 1); // atras do nginx
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // form de feedback envia JSON
 app.use(express.static(join(__dirname, '..', 'public')));
 
 // Healthcheck leve p/ deploy zero-downtime (sem sessao, sem query de estado):
@@ -80,8 +78,6 @@ app.use((req, res, next) => {
   res.locals.NOME_BOLAO = NOME_BOLAO;
   res.locals.isAdmin = !!req.session.admin;
   res.locals.path = req.path;
-  // botao de feedback->Linear: so no dominio de testes (ldm.com.br) e com Linear configurado
-  res.locals.feedbackOn = feedbackHabilitado(req.hostname) && linearConfigurado(process.env);
   // helper de bandeira para as views: devolve <img> ou '' se nao mapear
   res.locals.flag = (nome) => {
     const b = bandeira(nome);
@@ -310,38 +306,6 @@ app.get('/jogos', (req, res) => {
   res.render('jogos', { lista, faseFiltro, FASE_LABEL, FASES_ORDEM });
 });
 
-// ============================ FEEDBACK -> LINEAR ============================
-
-app.post('/feedback', async (req, res) => {
-  // gate de dominio (defesa em profundidade) + Linear configurado
-  if (!feedbackHabilitado(req.hostname) || !linearConfigurado(process.env)) {
-    return res.status(404).json({ ok: false, erro: 'desabilitado' });
-  }
-  const { tipo, mensagem, nome, empresa, url } = req.body || {};
-  if (empresa) return res.json({ ok: true }); // honeypot: finge sucesso e descarta
-  const msg = String(mensagem || '').trim();
-  if (msg.length < 3 || msg.length > 4000) {
-    return res.status(400).json({ ok: false, erro: 'Mensagem muito curta ou muito longa.' });
-  }
-  if (!rateLimitOk(req.ip)) {
-    return res.status(429).json({ ok: false, erro: 'Muitas tentativas. Tente de novo em 1 minuto.' });
-  }
-  try {
-    const r = await criaIssueLinear({
-      tipo: tipo === 'Bug' ? 'Bug' : 'Sugestão',
-      mensagem: msg,
-      nome: String(nome || '').trim().slice(0, 120),
-      url: String(url || req.get('referer') || '').slice(0, 300),
-      ua: String(req.get('user-agent') || '').slice(0, 300),
-      origem: process.env.FEEDBACK_ORIGEM || NOME_BOLAO,
-    });
-    res.json({ ok: true, url: r.url });
-  } catch (e) {
-    console.error('Feedback/Linear falhou:', e.message);
-    res.status(502).json({ ok: false, erro: 'Não consegui enviar agora. Tente mais tarde.' });
-  }
-});
-
 // ============================ ADMIN ============================
 
 app.get('/admin', (req, res) => {
@@ -499,8 +463,7 @@ if (process.env.BOLAO_NO_LISTEN !== '1') {
   app.listen(PORT, () => {
     console.log(`${NOME_BOLAO} rodando em http://localhost:${PORT}`);
   });
-  // Placar ao vivo agora vem da ESPN (iniciaAgendadorDetalheVivo grava
-  // resultados_ao_vivo) — football-data desligada p/ live (evita atraso/conflito).
+  // Placar ao vivo vem da ESPN (iniciaAgendadorDetalheVivo grava resultados_ao_vivo).
   iniciaAgendadorOdds(db); // odds de mercado (so se BOLAO_ODDS_API_TOKEN existir)
   iniciaAgendadorDetalheVivo(db); // placar + minuto + autores + cartoes ao vivo (ESPN); alimenta /artilheiros
 }

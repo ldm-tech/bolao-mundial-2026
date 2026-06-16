@@ -5,7 +5,7 @@ import { leDetalhes } from './detalhevivo.js';
 
 // FONTE UNICA: os artilheiros sao agregados dos MESMOS gols da ESPN que o
 // /jogos usa (config aovivo_detalhe) — nome, contagem e gol-contra batem entre
-// as duas telas. NAO usa mais a football-data /scorers.
+// as duas telas.
 
 function flagSrc(time) {
   const code = time && (codigoDoNome(time) || codigoDoIngles(time));

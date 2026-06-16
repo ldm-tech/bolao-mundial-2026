@@ -54,7 +54,6 @@ npm test
 | `BOLAO_ADMIN_SENHA` | Senha do admin (usada só no seed inicial) | gera aleatória |
 | `BOLAO_SESSION_SECRET` | Segredo do cookie de sessão | aleatório por boot |
 | `BOLAO_DB` | Caminho do arquivo SQLite | `data/bolao.db` |
-| `BOLAO_FOOTBALL_API_TOKEN` | Token do football-data.org p/ placares ao vivo (opcional) | desligado |
 | `BOLAO_ODDS_API_TOKEN` | Token do the-odds-api.com p/ odds de mercado (opcional) | desligado |
 
 > Em produção, **defina `BOLAO_SESSION_SECRET`** com um valor fixo e secreto,
@@ -76,8 +75,7 @@ node scripts/seed.js        # data/seed.json   -> SQLite
 ao servidor existem duas opções:
 
 1. **scp manual** após o deploy: copiar `data/contatos.json` para dentro do volume
-   (`/srv/www/bolao-pedreira.demo.ldm.com.br/data/`) e rodar `node scripts/seed.js`
-   novamente.
+   de dados do container e rodar `node scripts/seed.js` novamente.
 2. **Preencher pela interface**: Admin › Contatos — o admin cadastra e-mail/telefone
    de cada participante diretamente no site.
 
@@ -96,9 +94,7 @@ e o admin pode preencher depois.
 
 ## Deploy na VPS (Linux)
 
-> **Domínios**: testes em `bolao-pedreira.demo.ldm.com.br` (wildcard `*.demo.ldm.com.br`,
-> sem mexer no DNS). **Produção** será `bolao.topazio.eng.br` — trocar o `Host(...)` no
-> `deploy/docker-compose.yml` e o caminho do volume quando for ao ar.
+> Configure o `Host(...)` no `deploy/docker-compose.yml` para o seu domínio.
 
 Roda como container Docker atrás do **Traefik** (Docker Swarm + Portainer), com
 TLS/Let's Encrypt e redirect feitos pelo Traefik. Arquivos prontos:
