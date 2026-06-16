@@ -11,6 +11,7 @@ import {
   removeParticipante,
   listaParticipantes,
 } from './participantes.js';
+import { salvaPalpitesJogador, lePalpitesJogador } from './palpites-admin.js';
 import {
   rankingGeral,
   rankingFaseGrupos,
@@ -482,6 +483,108 @@ app.post('/admin/participantes/:id/remover', exigeAdmin, (req, res) => {
     );
   }
   return res.redirect('/admin/participantes?removeu=1');
+});
+
+// ---- Admin: Palpites por participante ----
+
+app.get('/admin/palpites', exigeAdmin, (req, res) => {
+  const participantes = db
+    .prepare(
+      "SELECT id, COALESCE(NULLIF(nome_exibicao,''),nome) AS nome_exib FROM jogadores ORDER BY nome COLLATE NOCASE",
+    )
+    .all();
+
+  const jogadorId = req.query.jogador ? parseInt(req.query.jogador, 10) : null;
+  let jogador = null;
+  let jogosPorFase = [];
+  let porJogo = new Map();
+  let especiais = {};
+
+  if (jogadorId) {
+    jogador = db.prepare('SELECT id, nome, nome_exibicao FROM jogadores WHERE id = ?').get(jogadorId);
+  }
+
+  if (jogador) {
+    const todosJogos = db.prepare('SELECT * FROM jogos ORDER BY numero').all();
+    ({ porJogo, especiais } = lePalpitesJogador(db, jogadorId));
+
+    // Agrupa jogos por fase (na ordem canônica)
+    const mapaFases = new Map();
+    for (const f of FASES_ORDEM) mapaFases.set(f, []);
+    for (const j of todosJogos) {
+      if (mapaFases.has(j.fase)) mapaFases.get(j.fase).push(j);
+    }
+    jogosPorFase = FASES_ORDEM
+      .filter((f) => mapaFases.get(f).length > 0)
+      .map((f) => ({
+        fase: f,
+        label: FASE_LABEL[f],
+        ehGrupos: f === 'grupos',
+        jogos: mapaFases.get(f),
+      }));
+  }
+
+  res.render('admin-palpites', {
+    participantes,
+    jogador,
+    jogosPorFase,
+    porJogo,
+    especiais,
+    selecoes: selecoesCanonicas(),
+    FASE_LABEL,
+    FASES_ORDEM,
+    salvou: req.query.salvou === '1',
+    erro: req.query.erro ? decodeURIComponent(req.query.erro) : null,
+  });
+});
+
+app.post('/admin/palpites', exigeAdmin, (req, res) => {
+  const jogadorId = parseInt(req.body.jogador_id, 10);
+  if (!jogadorId) {
+    return res.redirect('/admin/palpites?erro=' + encodeURIComponent('Participante não informado.'));
+  }
+
+  // Coleta todos os jogos do banco para saber a fase de cada um
+  const todosJogos = db.prepare('SELECT numero, fase FROM jogos').all();
+  const fasePorJogo = new Map(todosJogos.map((j) => [j.numero, j.fase]));
+
+  const porJogo = [];
+  for (const [jogoNumero, fase] of fasePorJogo) {
+    const gc = req.body[`gc_${jogoNumero}`];
+    const gf = req.body[`gf_${jogoNumero}`];
+    const tc = req.body[`tc_${jogoNumero}`];
+    const tf = req.body[`tf_${jogoNumero}`];
+    const penc = req.body[`penc_${jogoNumero}`];
+    const penf = req.body[`penf_${jogoNumero}`];
+
+    // Só envia ao módulo campos que têm valor para economizar escritas
+    // (mas o módulo já trata vazios como null, então não há risco)
+    porJogo.push({
+      jogo_numero: jogoNumero,
+      fase,
+      gols_casa: gc,
+      gols_fora: gf,
+      time_casa: tc,
+      time_fora: tf,
+      penaltis_casa: penc,
+      penaltis_fora: penf,
+    });
+  }
+
+  const especiais = {
+    artilheiro:  req.body.artilheiro,
+    campeao:     req.body.campeao,
+    finalista_1: req.body.finalista_1,
+    finalista_2: req.body.finalista_2,
+  };
+
+  const r = salvaPalpitesJogador(db, jogadorId, { porJogo, especiais });
+  if (!r.ok) {
+    return res.redirect(
+      `/admin/palpites?jogador=${jogadorId}&erro=${encodeURIComponent(r.erro)}`,
+    );
+  }
+  return res.redirect(`/admin/palpites?jogador=${jogadorId}&salvou=1`);
 });
 
 app.use((req, res) => res.status(404).render('404'));
