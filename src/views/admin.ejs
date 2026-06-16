@@ -13,7 +13,7 @@
   <div class="aviso">✅ Resultados salvos! O ranking já foi atualizado.</div>
 <% } %>
 
-<nav class="pills"><a href="/admin/contatos">👥 Contatos & Premiação</a></nav>
+<%- include('partials/admin-nav', { abaAtiva: 'resultados' }) %>
 
 <nav class="pills" aria-label="Fase">
   <% FASES_ORDEM.forEach(function(f){ %>

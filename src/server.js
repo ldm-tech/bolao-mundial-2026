@@ -6,6 +6,12 @@ import { randomBytes } from 'node:crypto';
 import { getDb, getConfig } from './db.js';
 import { verificaSenha } from './auth.js';
 import {
+  criaParticipante,
+  editaParticipante,
+  removeParticipante,
+  listaParticipantes,
+} from './participantes.js';
+import {
   rankingGeral,
   rankingFaseGrupos,
   rankingCompleto,
@@ -412,47 +418,70 @@ app.post('/admin/especiais', exigeAdmin, (req, res) => {
   res.redirect('/admin?fase=final&salvou=1');
 });
 
-app.get('/admin/contatos', exigeAdmin, (req, res) => {
-  const jogadores = db.prepare(
-    'SELECT id, COALESCE(NULLIF(nome_exibicao, \'\'), nome) AS nome, email, whatsapp, pago FROM jogadores ORDER BY nome',
-  ).all();
-  const { geral, faseGrupos } = rankingCompleto(db);
-  const { premios, pool } = calculaPremios({
-    cfg: CFG_PREMIACAO, geral, faseGrupos, nPagantes: nPagantes(db),
-  });
-  res.render('admin-contatos', {
-    jogadores, premios, pool, nPagantes: nPagantes(db),
-    valorAposta: CFG_PREMIACAO.valorAposta, salvou: req.query.salvou === '1',
+// ---- Admin: Participantes (CRUD) ----
+
+app.get('/admin/participantes', exigeAdmin, (req, res) => {
+  const participantes = listaParticipantes(db);
+  let editando = null;
+  if (req.query.editar) {
+    const id = parseInt(req.query.editar, 10);
+    editando = db.prepare('SELECT * FROM jogadores WHERE id = ?').get(id) || null;
+  }
+  res.render('admin-participantes', {
+    participantes,
+    editando,
+    salvou: req.query.salvou === '1',
+    removeu: req.query.removeu === '1',
+    erro: req.query.erro ? decodeURIComponent(req.query.erro) : null,
   });
 });
 
-const upsertContato = db.prepare(
-  'UPDATE jogadores SET nome_exibicao=@nome, email=@email, whatsapp=@whatsapp, pago=@pago WHERE id=@id',
-);
-app.post('/admin/contatos', exigeAdmin, (req, res) => {
-  const ids = db.prepare('SELECT id FROM jogadores').all().map((r) => r.id);
-  const tx = db.transaction(() => {
-    for (const id of ids) {
-      const nome = txtOuNull(req.body[`nome_${id}`]);
-      if (nome === null) continue; // nome de exibicao nao pode ficar vazio
-      upsertContato.run({
-        id,
-        nome,
-        email: txtOuNull(req.body[`email_${id}`]),
-        whatsapp: txtOuNull(req.body[`whats_${id}`]),
-        pago: req.body[`pago_${id}`] ? 1 : 0,
-      });
+app.post('/admin/participantes', exigeAdmin, (req, res) => {
+  const id = req.body.id ? parseInt(req.body.id, 10) : null;
+  const dados = {
+    nome: req.body.nome,
+    nome_exibicao: req.body.nome_exibicao,
+    email: req.body.email,
+    whatsapp: req.body.whatsapp,
+    pago: req.body.pago,
+  };
+
+  if (id) {
+    // edição
+    const r = editaParticipante(db, id, dados);
+    if (!r.ok) {
+      return res.redirect(
+        `/admin/participantes?editar=${id}&erro=${encodeURIComponent(r.erro)}`,
+      );
     }
-  });
-  tx();
-  res.redirect('/admin/contatos?salvou=1');
+    return res.redirect('/admin/participantes?salvou=1');
+  }
+
+  // criação
+  const r = criaParticipante(db, dados);
+  if (!r.ok) {
+    return res.redirect(
+      `/admin/participantes?erro=${encodeURIComponent(r.erro)}`,
+    );
+  }
+  return res.redirect('/admin/participantes?salvou=1');
 });
 
-// Atalho: marca todos como pago (todos pagaram) / ou desmarca todos.
-app.post('/admin/contatos/pago-todos', exigeAdmin, (req, res) => {
+app.post('/admin/participantes/pago-todos', exigeAdmin, (req, res) => {
   const valor = req.body.desmarcar ? 0 : 1;
   db.prepare('UPDATE jogadores SET pago = ?').run(valor);
-  res.redirect('/admin/contatos?salvou=1');
+  res.redirect('/admin/participantes?salvou=1');
+});
+
+app.post('/admin/participantes/:id/remover', exigeAdmin, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const r = removeParticipante(db, id);
+  if (!r.ok) {
+    return res.redirect(
+      `/admin/participantes?erro=${encodeURIComponent(r.erro)}`,
+    );
+  }
+  return res.redirect('/admin/participantes?removeu=1');
 });
 
 app.use((req, res) => res.status(404).render('404'));

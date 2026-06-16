@@ -1,0 +1,138 @@
+<%- include('partials/head') %>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Painel do Organizador</span>
+  <h1>Participantes</h1>
+  <p>Cadastre, edite ou remova participantes do bolão. Nome é obrigatório; demais campos são opcionais.</p>
+</div>
+
+<% if (salvou) { %><div class="aviso">✅ Participante salvo com sucesso!</div><% } %>
+<% if (removeu) { %><div class="aviso">🗑️ Participante removido.</div><% } %>
+<% if (erro) { %><div class="aviso aviso--erro">⚠️ <%= erro %></div><% } %>
+
+<%- include('partials/admin-nav', { abaAtiva: 'participantes' }) %>
+
+<section class="painel">
+  <div class="painel__titulo">
+    <h2><%= editando ? 'Editar Participante' : 'Novo Participante' %></h2>
+  </div>
+  <form method="post" action="/admin/participantes">
+    <% if (editando) { %>
+      <input type="hidden" name="id" value="<%= editando.id %>" />
+    <% } %>
+    <div class="admin-times" style="grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end">
+      <div>
+        <label style="font-size:.8rem;font-weight:700">Nome canônico <span style="color:var(--danger)">*</span></label>
+        <input type="text" name="nome" required placeholder="Ex: João Silva"
+          value="<%= editando ? editando.nome : '' %>" style="width:100%" />
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700">Nome de exibição <small style="font-weight:400">(apelido)</small></label>
+        <input type="text" name="nome_exibicao" placeholder="Ex: João"
+          value="<%= editando ? (editando.nome_exibicao || '') : '' %>" style="width:100%" />
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700">E-mail</label>
+        <input type="email" name="email" placeholder="opcional"
+          value="<%= editando ? (editando.email || '') : '' %>" style="width:100%" />
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700">WhatsApp</label>
+        <input type="text" name="whatsapp" placeholder="11999990000"
+          value="<%= editando ? (editando.whatsapp || '') : '' %>" style="width:100%" />
+      </div>
+      <% if (editando) { %>
+      <div style="display:flex;align-items:center;gap:.4rem;padding-top:1.2rem">
+        <input type="checkbox" name="pago" id="pago-edit" <%= editando.pago ? 'checked' : '' %> />
+        <label for="pago-edit" style="font-size:.9rem">Pagou</label>
+      </div>
+      <% } %>
+    </div>
+    <div class="barra-acoes" style="margin-top:.6rem">
+      <button class="btn" type="submit">
+        <%= editando ? '💾 Salvar alterações' : '➕ Adicionar participante' %>
+      </button>
+      <% if (editando) { %>
+        <a href="/admin/participantes" class="btn btn--ghost">Cancelar</a>
+      <% } %>
+    </div>
+  </form>
+</section>
+
+<section class="painel">
+  <div class="painel__titulo">
+    <h2>Lista de Participantes</h2>
+    <span class="chip"><%= participantes.length %></span>
+  </div>
+
+  <% if (participantes.length === 0) { %>
+    <p style="color:var(--muted);padding:.5rem 0">Nenhum participante cadastrado ainda.</p>
+  <% } else { %>
+    <div class="barra-acoes" style="justify-content:flex-start;gap:.5rem;margin-bottom:.6rem">
+      <form method="post" action="/admin/participantes/pago-todos">
+        <button class="btn" type="submit">✅ Marcar todos como pago</button>
+      </form>
+      <form method="post" action="/admin/participantes/pago-todos">
+        <input type="hidden" name="desmarcar" value="1" />
+        <button class="btn btn--ghost" type="submit">Desmarcar todos</button>
+      </form>
+    </div>
+
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Exibição</th>
+          <th>E-mail</th>
+          <th>WhatsApp</th>
+          <th style="text-align:center">Pago</th>
+          <th style="text-align:center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% participantes.forEach(function(p){ %>
+          <tr>
+            <td><%= p.nome %></td>
+            <td><%= p.nome_exibicao || '<span style="color:var(--muted)">—</span>' %></td>
+            <td>
+              <% if (p.email) { %>
+                <a href="mailto:<%= p.email %>"><%= p.email %></a>
+              <% } else { %>
+                <span style="color:var(--muted)">—</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (p.whatsapp) { %>
+                <a href="https://wa.me/55<%= String(p.whatsapp).replace(/\D/g,'') %>" target="_blank" rel="noopener">
+                  💬 <%= p.whatsapp %>
+                </a>
+              <% } else { %>
+                <span style="color:var(--muted)">—</span>
+              <% } %>
+            </td>
+            <td style="text-align:center">
+              <% if (p.pago) { %>
+                <span style="color:var(--green,#2a7)">✅</span>
+              <% } else { %>
+                <span style="color:var(--muted)">—</span>
+              <% } %>
+            </td>
+            <td style="text-align:center;white-space:nowrap">
+              <a href="/admin/participantes?editar=<%= p.id %>" class="btn btn--ghost" style="font-size:.8rem;padding:.2rem .6rem">✏️ Editar</a>
+              <form method="post" action="/admin/participantes/<%= p.id %>/remover" style="display:inline"
+                onsubmit="return confirm('Remover <%= p.nome %>? Isso apaga todos os palpites dele!')">
+                <button class="btn btn--ghost" type="submit" style="font-size:.8rem;padding:.2rem .6rem;color:var(--danger,#c00)">🗑️</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+
+<form method="post" action="/admin/logout" style="margin-top:1.5rem">
+  <button class="btn btn--ghost" type="submit">Sair</button>
+</form>
+
+<%- include('partials/foot') %>
