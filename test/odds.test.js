@@ -6,29 +6,57 @@ import { rmSync } from 'node:fs';
 import { probsDeMercado } from '../src/odds.js';
 
 // ---------- probsDeMercado: pura, sem banco ----------
-const book = (h, d, a) => ({
-  markets: [{ key: 'h2h', outcomes: [
-    { name: 'Brazil', price: h }, { name: 'Draw', price: d }, { name: 'Morocco', price: a },
-  ] }],
-});
-const matchOdds = (...books) => ({ home_team: 'Brazil', away_team: 'Morocco', bookmakers: books });
+// Constroi um summary ESPN com pickcenter contendo moneylines americanos.
+// espnHomeId = ID do time da ESPN que aparece como "home" no evento.
+function makeSummary(homeML, awayML, drawML, espnHomeId = '203') {
+  return {
+    pickcenter: [
+      {
+        homeTeamOdds: { moneyLine: homeML, team: { id: espnHomeId } },
+        awayTeamOdds: { moneyLine: awayML },
+        drawOdds: { moneyLine: drawML },
+      },
+    ],
+  };
+}
 
-test('probsDeMercado: normaliza (soma 1) e mapeia nomes em ingles', () => {
-  const p = probsDeMercado(matchOdds(book(1.5, 4, 7)));
-  assert.equal(p.homeCode, 'br');
-  assert.equal(p.awayCode, 'ma');
-  const soma = p.pHome + p.pDraw + p.pAway;
-  assert.ok(Math.abs(soma - 1) < 1e-9, `soma deveria ser 1, foi ${soma}`);
-  assert.ok(p.pHome > p.pAway); // favorito tem prob maior
+test('probsDeMercado: favorito em casa, mesmoMando=true', () => {
+  // home -230 (favorito), away +750, draw +330
+  const p = probsDeMercado(makeSummary(-230, 750, 330), '203', true);
+  assert.ok(p !== null);
+  const soma = p.pCasa + p.pEmpate + p.pFora;
+  assert.ok(Math.abs(soma - 1) < 1e-9, `soma deve ser 1, foi ${soma}`);
+  // favorito em casa => pCasa maior
+  assert.ok(p.pCasa > p.pFora, `pCasa(${p.pCasa}) deve ser > pFora(${p.pFora})`);
+  // pCasa entre ~0.66 e ~0.70 conforme conversão ML
+  assert.ok(p.pCasa >= 0.64 && p.pCasa <= 0.72, `pCasa esperado ~0.66-0.70, foi ${p.pCasa}`);
 });
 
-test('probsDeMercado: faz a media entre as casas', () => {
-  const p = probsDeMercado(matchOdds(book(1.5, 4, 7), book(2.0, 3.5, 4)));
-  assert.ok(Math.abs(p.pHome + p.pDraw + p.pAway - 1) < 1e-9);
+test('probsDeMercado: mando invertido troca pCasa<->pFora', () => {
+  const pMesmo = probsDeMercado(makeSummary(-230, 750, 330), '203', true);
+  const pInv   = probsDeMercado(makeSummary(-230, 750, 330), '203', false);
+  assert.ok(pMesmo !== null && pInv !== null);
+  assert.ok(Math.abs(pMesmo.pCasa - pInv.pFora) < 1e-9, 'pCasa e pFora devem ser trocados');
+  assert.ok(Math.abs(pMesmo.pFora - pInv.pCasa) < 1e-9, 'pFora e pCasa devem ser trocados');
+  assert.ok(Math.abs(pMesmo.pEmpate - pInv.pEmpate) < 1e-9, 'pEmpate permanece igual');
+  // soma ainda deve ser 1
+  const soma = pInv.pCasa + pInv.pEmpate + pInv.pFora;
+  assert.ok(Math.abs(soma - 1) < 1e-9);
 });
 
-test('probsDeMercado: time desconhecido retorna null', () => {
-  assert.equal(probsDeMercado({ home_team: 'Atlantis', away_team: 'Brazil', bookmakers: [] }), null);
+test('probsDeMercado: summary sem pickcenter retorna null', () => {
+  assert.equal(probsDeMercado({}, '203', true), null);
+  assert.equal(probsDeMercado({ pickcenter: [] }, '203', true), null);
+  assert.equal(probsDeMercado(null, '203', true), null);
+});
+
+test('probsDeMercado: ML positivo converte corretamente (underdog)', () => {
+  // away +750 => p_raw = 100/(750+100) = 100/850 ≈ 0.1176
+  // Usa um summary com home positivo enorme pra isolar o away
+  const p = probsDeMercado(makeSummary(-230, 750, 330), '203', true);
+  // pFora < pEmpate < pCasa (favorito em casa, empate intermediario)
+  assert.ok(p.pFora < p.pEmpate, `pFora(${p.pFora}) deve ser < pEmpate(${p.pEmpate})`);
+  assert.ok(p.pEmpate < p.pCasa, `pEmpate(${p.pEmpate}) deve ser < pCasa(${p.pCasa})`);
 });
 
 // ---------- integracao: oddsBolao + sincronizaOdds ----------
@@ -63,12 +91,45 @@ test('oddsBolao: conta casa/empate/fora dos palpites', () => {
   assert.deepEqual(o, { casa: 3, empate: 1, fora: 1, total: 5 });
 });
 
-test('sincronizaOdds: grava e orienta pelo nosso mando', async () => {
-  const fake = async () => ({ ok: true, json: async () => [matchOdds(book(1.5, 4, 7))] });
-  const n = await sincronizaOdds(getDb(), 'token', fake);
+test('sincronizaOdds ESPN: grava e orienta pelo nosso mando', async () => {
+  // Scoreboard ESPN: Brasil (BRA, id=109) como ESPN-home vs Marrocos (MAR, id=207)
+  // summary: home -230 (favorito) => Brasil e favorito em casa => prob_casa > prob_fora
+  const scoreboard = {
+    events: [
+      {
+        id: 'ev1',
+        status: { type: { state: 'in', description: 'In Progress' } },
+        competitions: [
+          {
+            competitors: [
+              {
+                homeAway: 'home',
+                team: { id: '109', abbreviation: 'BRA', displayName: 'Brazil' },
+                score: '1',
+              },
+              {
+                homeAway: 'away',
+                team: { id: '207', abbreviation: 'MAR', displayName: 'Morocco' },
+                score: '0',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+  const summary = makeSummary(-230, 750, 330, '109');
+
+  const fakeFetch = async (url) => {
+    if (url.includes('scoreboard')) return { json: async () => scoreboard };
+    if (url.includes('summary')) return { json: async () => summary };
+    return { json: async () => ({}) };
+  };
+
+  const n = await sincronizaOdds(getDb(), fakeFetch);
   assert.equal(n, 1);
   const r = getDb().prepare('SELECT * FROM odds_mercado WHERE jogo_numero = 6').get();
   // Brasil (casa) e favorito -> prob_casa > prob_fora
-  assert.ok(r.prob_casa > r.prob_fora);
+  assert.ok(r.prob_casa > r.prob_fora, `prob_casa(${r.prob_casa}) deve ser > prob_fora(${r.prob_fora})`);
   assert.ok(Math.abs(r.prob_casa + r.prob_empate + r.prob_fora - 1) < 1e-9);
 });

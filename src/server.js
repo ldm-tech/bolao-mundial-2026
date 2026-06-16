@@ -464,7 +464,7 @@ if (process.env.BOLAO_NO_LISTEN !== '1') {
     console.log(`${NOME_BOLAO} rodando em http://localhost:${PORT}`);
   });
   // Placar ao vivo vem da ESPN (iniciaAgendadorDetalheVivo grava resultados_ao_vivo).
-  iniciaAgendadorOdds(db); // odds de mercado (so se BOLAO_ODDS_API_TOKEN existir)
+  iniciaAgendadorOdds(db); // odds de mercado via ESPN (gratis, sem token)
   iniciaAgendadorDetalheVivo(db); // placar + minuto + autores + cartoes ao vivo (ESPN); alimenta /artilheiros
 }
 

@@ -90,7 +90,7 @@ export function codigoDaTla(tla) {
   return t ? t.code : null;
 }
 
-// nomes em ingles usados pela the-odds-api -> codigo ISO
+// nomes em ingles usados por fontes externas (ESPN displayName etc.) -> codigo ISO
 const INGLES = {
   Algeria: 'dz', Argentina: 'ar', Australia: 'au', Austria: 'at', Belgium: 'be',
   'Bosnia & Herzegovina': 'ba', Brazil: 'br', Canada: 'ca', 'Cape Verde': 'cv',
@@ -108,7 +108,7 @@ const normEn = (s) =>
   String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]/g, '');
 const PORINGLES = new Map(Object.entries(INGLES).map(([en, code]) => [normEn(en), code]));
 
-// codigo ISO a partir do nome em ingles da the-odds-api; ou null
+// codigo ISO a partir do nome em ingles (ESPN displayName ou similar); ou null
 export function codigoDoIngles(nome) {
   return PORINGLES.get(normEn(nome)) || null;
 }

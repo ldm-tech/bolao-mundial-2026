@@ -1,7 +1,10 @@
 import { getDb } from './db.js';
-import { codigoDoNome, codigoDoIngles } from './flags.js';
+import { codigoDaTla, codigoDoIngles, codigoDoNome } from './flags.js';
 
-const BASE = 'https://api.the-odds-api.com/v4/sports/soccer_fifa_world_cup/odds/';
+// Fonte ao vivo de odds: API publica da ESPN (gratis, sem chave).
+const SCOREBOARD_BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
+const COPA = '20260611-20260719';
+const SUMMARY = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event=';
 
 // ---------- Odds do bolao (a partir dos palpites) ----------
 // Map(jogo_numero -> { casa, empate, fora, total }) com as contagens de resultado.
@@ -20,64 +23,74 @@ export function oddsBolao(db = getDb()) {
   return out;
 }
 
-// ---------- Mercado (the-odds-api) ----------
-// Funcao PURA: 1 match -> { homeCode, awayCode, pHome, pDraw, pAway } ou null.
-// Media das casas, cada uma normalizada para somar 1 (remove a margem/vig).
-export function probsDeMercado(match) {
-  const homeCode = codigoDoIngles(match?.home_team);
-  const awayCode = codigoDoIngles(match?.away_team);
-  if (!homeCode || !awayCode) return null;
-  let sh = 0;
-  let sd = 0;
-  let sa = 0;
-  let n = 0;
-  for (const bk of match.bookmakers || []) {
-    const mk = (bk.markets || []).find((m) => m.key === 'h2h');
-    if (!mk) continue;
-    let oh;
-    let od;
-    let oa;
-    for (const o of mk.outcomes || []) {
-      if (o.name === match.home_team) oh = o.price;
-      else if (o.name === match.away_team) oa = o.price;
-      else if (o.name === 'Draw') od = o.price;
-    }
-    if (!oh || !od || !oa) continue;
-    const ih = 1 / oh;
-    const id = 1 / od;
-    const ia = 1 / oa;
-    const s = ih + id + ia;
-    sh += ih / s;
-    sd += id / s;
-    sa += ia / s;
-    n += 1;
+// ---------- Mercado (ESPN pickcenter / moneylines americanos) ----------
+// Funcao PURA: summary ESPN + ID da casa ESPN + flag de mando -> { pCasa, pEmpate, pFora } ou null.
+//
+// Conversao moneyline americano -> probabilidade implicita:
+//   ML < 0:  p = (-ML) / (-ML + 100)
+//   ML > 0:  p = 100  / (ML  + 100)
+//
+// As tres probabilidades (home/draw/away) sao normalizadas para somar exatamente 1
+// (remove a margem/vig do operador).
+//
+// Orientacao de casa/fora: se mesmoMando=true, ESPN-home = NOSSO casa;
+// caso contrario, as probabilidades sao trocadas.
+export function probsDeMercado(summary, espnHomeId, mesmoMando) {
+  const pc = summary && summary.pickcenter && summary.pickcenter[0];
+  if (!pc) return null;
+
+  const mlHome = pc.homeTeamOdds && pc.homeTeamOdds.moneyLine;
+  const mlAway = pc.awayTeamOdds && pc.awayTeamOdds.moneyLine;
+  const mlDraw = pc.drawOdds && pc.drawOdds.moneyLine;
+
+  if (mlHome == null || mlAway == null || mlDraw == null) return null;
+
+  const mlToProb = (ml) => (ml < 0 ? (-ml) / (-ml + 100) : 100 / (ml + 100));
+
+  const pH = mlToProb(mlHome);
+  const pD = mlToProb(mlDraw);
+  const pA = mlToProb(mlAway);
+  const s = pH + pD + pA;
+  if (s <= 0) return null;
+
+  const normH = pH / s;
+  const normD = pD / s;
+  const normA = pA / s;
+
+  // Orienta pelo nosso mando
+  if (mesmoMando) {
+    return { pCasa: normH, pEmpate: normD, pFora: normA };
+  } else {
+    return { pCasa: normA, pEmpate: normD, pFora: normH };
   }
-  if (n === 0) return null;
-  return { homeCode, awayCode, pHome: sh / n, pDraw: sd / n, pAway: sa / n };
 }
 
-// Indice dos NOSSOS jogos por par de selecoes (ISO) -> { numero, casaCode }.
+// ---------- Utilitarios internos ----------
+
+// ISO do time a partir do que a ESPN manda (mesma logica de detalhevivo.js).
+function isoEspn(team) {
+  if (!team) return null;
+  return codigoDaTla(team.abbreviation) || codigoDoIngles(team.displayName) || codigoDoNome(team.displayName) || null;
+}
+
+// Indice par-de-ISO -> { numero, homeCode }: grupos pelo fixture + mata-mata pelos times lancados.
 function indicePorPar(db) {
   const idx = new Map();
   const add = (numero, casa, fora) => {
-    if (casa && fora) idx.set([casa, fora].sort().join('-'), { numero, casaCode: casa });
+    const h = codigoDoNome(casa);
+    const a = codigoDoNome(fora);
+    if (!h || !a) return;
+    idx.set([h, a].sort().join('-'), { numero, homeCode: h });
   };
   for (const j of db.prepare("SELECT numero, time_casa, time_fora FROM jogos WHERE fase='grupos'").all()) {
-    add(j.numero, codigoDoNome(j.time_casa), codigoDoNome(j.time_fora));
+    add(j.numero, j.time_casa, j.time_fora);
   }
   for (const r of db
     .prepare('SELECT jogo_numero, time_casa, time_fora FROM resultados WHERE time_casa IS NOT NULL AND time_fora IS NOT NULL')
     .all()) {
-    add(r.jogo_numero, codigoDoNome(r.time_casa), codigoDoNome(r.time_fora));
+    add(r.jogo_numero, r.time_casa, r.time_fora);
   }
   return idx;
-}
-
-async function buscar(token, fetchFn) {
-  const url = `${BASE}?apiKey=${token}&regions=eu&markets=h2h&oddsFormat=decimal`;
-  const resp = await fetchFn(url);
-  if (!resp.ok) throw new Error(`the-odds-api HTTP ${resp.status}`);
-  return resp.json();
 }
 
 const upsertOdds = (db) =>
@@ -88,47 +101,67 @@ const upsertOdds = (db) =>
       prob_casa=excluded.prob_casa, prob_empate=excluded.prob_empate,
       prob_fora=excluded.prob_fora, atualizado_em=excluded.atualizado_em`);
 
-// Busca, calcula e grava as odds de mercado. Retorna quantos jogos gravou.
-export async function sincronizaOdds(db, token, fetchFn = fetch) {
-  const matches = await buscar(token, fetchFn);
+// Busca, calcula e grava as odds de mercado via ESPN. Retorna quantos jogos gravou.
+// So busca o summary de jogos ainda relevantes (nao encerrados ou recentemente encerrados).
+export async function sincronizaOdds(db, fetchFn = fetch) {
+  const sb = await (await fetchFn(`${SCOREBOARD_BASE}?dates=${COPA}&limit=400`)).json();
   const idx = indicePorPar(db);
-  const stmt = upsertOdds(db);
   const agora = new Date().toISOString();
-  let n = 0;
-  const tx = db.transaction(() => {
-    for (const m of matches || []) {
-      const p = probsDeMercado(m);
-      if (!p) continue;
-      const entry = idx.get([p.homeCode, p.awayCode].sort().join('-'));
-      if (!entry) continue;
-      const mesmoMando = entry.casaCode === p.homeCode;
-      stmt.run({
-        jogo_numero: entry.numero,
-        prob_casa: mesmoMando ? p.pHome : p.pAway,
-        prob_empate: p.pDraw,
-        prob_fora: mesmoMando ? p.pAway : p.pHome,
-        atualizado_em: agora,
-      });
-      n += 1;
+
+  // 1a passagem: coleta todos os dados de rede (async, fora da transacao sincrona)
+  const linhas = [];
+  for (const ev of (sb && sb.events) || []) {
+    const comp = ev.competitions && ev.competitions[0];
+    const stType = ev.status && ev.status.type;
+    const state = stType && stType.state; // 'pre' | 'in' | 'post'
+    // Busca odds so de jogos que ainda nao terminaram (pre ou em andamento).
+    // Jogos encerrados (post) raramente tem odds atualizadas, e economiza requisicoes.
+    if (!comp || state === 'post') continue;
+
+    const comps = comp.competitors || [];
+    const home = comps.find((c) => c.homeAway === 'home');
+    const away = comps.find((c) => c.homeAway === 'away');
+    if (!home || !away) continue;
+
+    const hIso = isoEspn(home.team);
+    const aIso = isoEspn(away.team);
+    if (!hIso || !aIso) continue;
+
+    const entry = idx.get([hIso, aIso].sort().join('-'));
+    if (!entry) continue;
+
+    const mesmoMando = entry.homeCode === hIso;
+
+    let summary;
+    try {
+      summary = await (await fetchFn(SUMMARY + ev.id)).json();
+    } catch (e) {
+      continue; // sem summary, pula
     }
+
+    const p = probsDeMercado(summary, home.team.id, mesmoMando);
+    if (!p) continue; // sem pickcenter, pula
+
+    linhas.push({ jogo_numero: entry.numero, prob_casa: p.pCasa, prob_empate: p.pEmpate, prob_fora: p.pFora, atualizado_em: agora });
+  }
+
+  // 2a passagem: grava tudo num unico tx sincrono (better-sqlite3 nao aceita async)
+  const stmt = upsertOdds(db);
+  const tx = db.transaction(() => {
+    for (const row of linhas) stmt.run(row);
   });
   tx();
-  return n;
+  return linhas.length;
 }
 
-// Agendador: roda a cada intervalo (padrao 6h) se houver token.
+// Agendador: roda a cada intervalo (padrao 6h). Fonte ESPN, sem token necessario.
 export function iniciaAgendadorOdds(db = getDb(), { intervaloMs = 6 * 60 * 60 * 1000 } = {}) {
-  const token = process.env.BOLAO_ODDS_API_TOKEN;
-  if (!token) {
-    console.log('Odds de mercado: desligado (defina BOLAO_ODDS_API_TOKEN para ativar).');
-    return null;
-  }
   const ciclo = async () => {
     try {
-      const n = await sincronizaOdds(db, token);
-      console.log(`Odds de mercado: ${n} jogo(s) atualizado(s).`);
+      const n = await sincronizaOdds(db);
+      console.log(`Odds de mercado (ESPN): ${n} jogo(s) atualizado(s).`);
     } catch (e) {
-      console.error('Odds de mercado: erro no ciclo —', e.message);
+      console.error('Odds de mercado (ESPN): erro no ciclo —', e.message);
     }
   };
   ciclo();
