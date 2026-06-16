@@ -1,0 +1,10 @@
+<% if (aoVivoCount > 0) { %>
+  <div class="banner-vivo">
+    <span class="ponto-vivo"></span>
+    <span><strong><%= aoVivoCount %> jogo<%= aoVivoCount > 1 ? 's' : '' %> ao vivo.</strong> Os placares atualizam sozinhos.</span>
+  </div>
+<% } else if (parcialCount > 0) { %>
+  <div class="banner-vivo banner-vivo--parcial">
+    <span>⏱️ <%= parcialCount %> placar<%= parcialCount > 1 ? 'es' : '' %> parcia<%= parcialCount > 1 ? 'is' : 'l' %> (automático<%= parcialCount > 1 ? 's' : '' %>) — atualiza<%= parcialCount > 1 ? 'm' : '' %> sozinho automaticamente.</span>
+  </div>
+<% } %>

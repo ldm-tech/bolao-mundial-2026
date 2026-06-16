@@ -1,0 +1,91 @@
+<%- include('partials/head') %>
+
+<%
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function img(t) {
+  return t.src ? '<img src="' + esc(t.src) + '" alt="" loading="lazy" />' : '';
+}
+function chip(t) {
+  var badge = t.badge ? '<b class="time-chip__badge">' + esc(t.badge) + '</b>' : '';
+  return '<span class="time-chip">' + img(t) + '<span>' + esc(t.label) + '</span>' + badge + '</span>';
+}
+function confronto(c) {
+  return '<span class="confronto-chip">' + img(c.casa) + '<span>' + esc(c.casa.label) + '</span>'
+    + '<i class="vs">×</i>' + img(c.fora) + '<span>' + esc(c.fora.label) + '</span></span>';
+}
+%>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Quem foi longe</span>
+  <h1>Classificados por Fase</h1>
+  <p>
+    <% if (fase.modo === '16avos') { %>
+      As seleções que cada um classificou da fase de grupos, por grupo e posição (1º, 2º e 3º).
+    <% } else if (fase.modo === 'confrontos') { %>
+      Os confrontos de cada um nesta fase — <strong>mandante × visitante</strong> (o mando importa).
+    <% } else { %>
+      O palpite de campeão de cada um.
+    <% } %>
+  </p>
+</div>
+
+<nav class="pills" aria-label="Fase">
+  <% fases.forEach(function(f){ %>
+    <a href="/classificados?fase=<%= f.key %>" class="<%= fase.key === f.key ? 'ativo' : '' %>"><%= f.label %></a>
+  <% }); %>
+</nav>
+
+<% if (consenso.length) { %>
+  <section class="consenso">
+    <span class="consenso__rotulo">✅ Todos classificaram</span>
+    <div class="time-chips">
+      <% consenso.forEach(function(t){ %><%- chip(t) %><% }); %>
+    </div>
+  </section>
+<% } %>
+
+<% if (typeof popularidade !== 'undefined' && popularidade.length) { %>
+  <section class="painel">
+    <div class="painel__titulo">
+      <h2>📊 <% if (fase.modo === 'campeao') { %>Apostas no campeão<% } else { %>Mais escolhidos<% } %></h2>
+      <span class="chip">% dos participantes</span>
+    </div>
+    <div class="pop-lista">
+      <% popularidade.forEach(function(p){ %>
+        <div class="pop-item">
+          <div class="pop-item__time"><%- img(p) %><span><%= esc(p.label) %></span></div>
+          <div class="pop-item__barra"><span style="width: <%= p.pct %>%"></span></div>
+          <div class="pop-item__pct"><%= p.pct %>%</div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+<% } %>
+
+<div class="busca-wrap">
+  <input id="busca-classif" type="search" placeholder="Buscar um nome…" aria-label="Buscar participante" />
+</div>
+
+<section class="painel">
+  <p class="busca-vazio" id="classif-vazio" hidden>Nenhum nome encontrado.</p>
+  <% linhas.forEach(function(l){ %>
+    <div class="classif-pessoa" data-nome="<%= l.nome %>">
+      <div class="classif-pessoa__nome"><%= l.nome %></div>
+      <div class="time-chips<%= fase.modo === 'confrontos' ? ' time-chips--conf' : '' %>">
+        <% if (fase.modo === 'confrontos') { %>
+          <% if (!l.confrontos || l.confrontos.length === 0) { %><span class="vazio-mini">—</span><% } %>
+          <% (l.confrontos || []).forEach(function(c){ %><%- confronto(c) %><% }); %>
+        <% } else { %>
+          <% if (!l.times || l.times.length === 0) { %><span class="vazio-mini">—</span><% } %>
+          <% (l.times || []).forEach(function(t){ %><%- chip(t) %><% }); %>
+        <% } %>
+      </div>
+    </div>
+  <% }); %>
+</section>
+
+<script src="/classificados-busca.js" defer></script>
+<%- include('partials/foot') %>

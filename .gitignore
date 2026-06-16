@@ -1,0 +1,36 @@
+node_modules/
+
+# banco SQLite (runtime — nao deve ir para o repo)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.db-*
+
+# PII: contatos dos participantes (e-mails, WhatsApp)
+# Nunca commitar — transportar manualmente para a VPS via scp
+# ou preencher via Admin › Contatos na interface.
+# O app funciona sem este arquivo (cria jogadores sem e-mail/telefone).
+data/contatos.json
+
+# planilhas dos participantes contem dados pessoais (e-mail, WhatsApp) e
+# nao sao necessarias em runtime — o app usa apenas data/seed.json.
+planilhas/
+
+# artefatos de teste/preview
+screenshots/
+.playwright-mcp/
+*.png
+!docs/**/*.png
+!public/*.png
+
+# segredos do deploy (senha admin, tokens) — lidos pelo update.sh, nunca commitar
+deploy/.env
+deploy/.env.*
+!deploy/.env.example
+
+# config local do Claude Code (permissoes especificas da maquina)
+.claude/settings.local.json
+
+# sistema
+.DS_Store
+*.log

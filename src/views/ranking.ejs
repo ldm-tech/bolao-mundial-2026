@@ -1,0 +1,93 @@
+<%- include('partials/head') %>
+<script src="/ranking-busca.js" defer></script>
+<script src="/evolucao.js" defer></script>
+
+<div data-auto-refresh data-versao="<%= versao %>">
+<div class="cabecalho-pagina">
+  <span class="kicker">Classificação Geral</span>
+  <h1>Ranking do Bolão</h1>
+  <p>
+    <% if (totalResultados === 0) { %>
+      Os palpites já estão registrados! O ranking começa a contar assim que o
+      primeiro resultado for lançado. 🏁
+    <% } else { %>
+      <%= totalResultados %> jogo<%= totalResultados > 1 ? 's' : '' %> já
+      computado<%= totalResultados > 1 ? 's' : '' %>. Toque no 📌 para fixar no topo (pode fixar vários).
+    <% } %>
+  </p>
+</div>
+
+<%- include('partials/banner-vivo') %>
+
+<% const medalhas = ['🥇','🥈','🥉']; %>
+<% if (ranking.length >= 3) { %>
+  <section class="podio" aria-label="Pódio">
+    <% [1, 0, 2].forEach(function(i){ const j = ranking[i]; %>
+      <a class="podio__card podio__card--<%= j.posicao <= 3 ? j.posicao : 'x' %>" href="/jogador/<%= j.id %>">
+        <div class="podio__medalha"><%= medalhas[j.posicao-1] || '' %></div>
+        <div class="podio__pos"><%= j.posicao %>º · <%= ({1:'60%',2:'20%',3:'10%'})[j.posicao] || '' %></div>
+        <div class="podio__nome"><%= j.nome %></div>
+        <div class="podio__pts"><%= j.total %> <span>pts</span></div>
+      </a>
+    <% }); %>
+  </section>
+<% } %>
+
+<% if (premios && premios.length) {
+     const extra = premios.filter(p => p.chave === 'primeiraFase' || p.chave === 'meio'); %>
+  <section class="premio-cards" aria-label="Prêmios especiais">
+    <% extra.forEach(function(p){ %>
+      <div class="premio-card">
+        <span class="premio-card__ic" aria-hidden="true"><%= p.chave === 'primeiraFase' ? '🚩' : '🤝' %></span>
+        <div>
+          <div class="premio-card__rot"><%= p.rotulo %> · <%= Math.round(p.pct*100) %>%<% if (p.posicao) { %> · <%= p.posicao %>º<% } %></div>
+          <div class="premio-card__nome"><%= p.jogador ? p.jogador.nome : '—' %></div>
+        </div>
+      </div>
+    <% }); %>
+  </section>
+<% } %>
+
+<section class="painel painel--fixados" id="fixados-painel" hidden>
+  <div class="painel__titulo"><h2>📌 Fixados</h2><span class="chip" id="fixados-contagem"></span></div>
+  <table class="tabela"><tbody id="fixados-linhas"></tbody></table>
+  <div id="evo-grafico" class="evo" hidden></div>
+</section>
+
+<div class="busca-wrap">
+  <input id="busca-jogador" type="search" placeholder="Buscar seu nome entre os <%= ranking.length %>…" aria-label="Buscar jogador" />
+</div>
+
+<section class="painel">
+  <div class="painel__titulo">
+    <h2>Tabela Completa</h2>
+    <span class="chip"><%= ranking.length %> jogadores</span>
+  </div>
+  <table class="tabela">
+    <thead>
+      <tr>
+        <th class="col-pos">#</th>
+        <th>Jogador</th>
+        <th class="col-num esconde-mobile">Bônus</th>
+        <th class="col-num esconde-mobile">Especiais</th>
+        <th class="col-num">Pontos</th>
+      </tr>
+    </thead>
+    <tbody id="ranking-linhas">
+      <% ranking.forEach(function(j){ %>
+        <tr data-nome="<%= j.nome %>" data-id="<%= j.id %>">
+          <td class="col-pos">
+            <span class="pos-badge <%= j.posicao <= 3 ? 'pos-badge--' + j.posicao : '' %>"><%= j.posicao %></span>
+          </td>
+          <td><a href="/jogador/<%= j.id %>"><%= j.nome %></a><button type="button" class="pin-btn" data-pin title="Fixar/soltar no topo" aria-label="Fixar ou soltar no topo">📌</button></td>
+          <td class="col-num esconde-mobile"><%= j.bonus %></td>
+          <td class="col-num esconde-mobile"><%= j.especiais %></td>
+          <td class="col-num"><span class="pts-total"><%= j.total %></span></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</section>
+</div>
+
+<%- include('partials/foot') %>

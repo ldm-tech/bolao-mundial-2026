@@ -1,0 +1,102 @@
+<%- include('partials/head') %>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Painel do Organizador</span>
+  <h1>Lançar Resultados</h1>
+  <p>
+    Informe o placar real de cada jogo. No mata-mata, preencha também quais
+    seleções realmente jogaram. O ranking é recalculado automaticamente.
+  </p>
+</div>
+
+<% if (salvou) { %>
+  <div class="aviso">✅ Resultados salvos! O ranking já foi atualizado.</div>
+<% } %>
+
+<nav class="pills"><a href="/admin/contatos">👥 Contatos & Premiação</a></nav>
+
+<nav class="pills" aria-label="Fase">
+  <% FASES_ORDEM.forEach(function(f){ %>
+    <a href="/admin?fase=<%= f %>" class="<%= faseAtual === f ? 'ativo' : '' %>"><%= FASE_LABEL[f] %></a>
+  <% }); %>
+</nav>
+
+<datalist id="selecoes">
+  <% selecoes.forEach(function(s){ %><option value="<%= s %>"></option><% }); %>
+</datalist>
+
+<form method="post" action="/admin/resultados">
+  <input type="hidden" name="fase" value="<%= faseAtual %>" />
+  <div class="admin-grid">
+    <% jogos.forEach(function(j){ const r = resultados.get(j.numero) || {}; %>
+      <% if (faseAtual === 'grupos') { %>
+        <div class="admin-jg">
+          <div class="admin-jg__conf">
+            <span class="admin-jg__n">Jogo <%= j.numero %></span>
+            <%- flag(j.time_casa) %><%= j.time_casa %> <span class="jj-x">×</span> <%- flag(j.time_fora) %><%= j.time_fora %>
+          </div>
+          <div class="admin-jg__inputs">
+            <input type="number" min="0" name="gc_<%= j.numero %>" value="<%= r.gols_casa ?? '' %>" inputmode="numeric" aria-label="Gols <%= j.time_casa %>" />
+            <span class="jj-x">×</span>
+            <input type="number" min="0" name="gf_<%= j.numero %>" value="<%= r.gols_fora ?? '' %>" inputmode="numeric" aria-label="Gols <%= j.time_fora %>" />
+          </div>
+        </div>
+      <% } else { %>
+        <div style="background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:0.6rem 0.7rem">
+          <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.4rem">
+            <span class="jogo-card__num">Jogo <%= j.numero %></span>
+            <span><%= j.data ? j.data.split('-').reverse().join('/') : '' %><% if (j.cidade) { %> · <%= j.cidade %><% } %></span>
+          </div>
+          <div class="admin-times">
+            <input type="text" name="tc_<%= j.numero %>" list="selecoes" placeholder="Seleção mandante" value="<%= r.time_casa ?? '' %>" />
+            <input type="text" name="tf_<%= j.numero %>" list="selecoes" placeholder="Seleção visitante" value="<%= r.time_fora ?? '' %>" />
+          </div>
+          <div class="admin-jogo__meio" style="margin-top:.4rem;justify-content:center">
+            <input type="number" min="0" style="max-width:5rem" name="gc_<%= j.numero %>" value="<%= r.gols_casa ?? '' %>" inputmode="numeric" aria-label="Gols mandante" />
+            <span style="color:var(--muted)">×</span>
+            <input type="number" min="0" style="max-width:5rem" name="gf_<%= j.numero %>" value="<%= r.gols_fora ?? '' %>" inputmode="numeric" aria-label="Gols visitante" />
+          </div>
+          <div class="admin-penaltis">
+            <span>🥅 Pênaltis <small>(se houver)</small></span>
+            <div>
+              <input type="number" min="0" name="penc_<%= j.numero %>" value="<%= r.penaltis_casa ?? '' %>" inputmode="numeric" aria-label="Pênaltis mandante" />
+              <span style="color:var(--muted)">×</span>
+              <input type="number" min="0" name="penf_<%= j.numero %>" value="<%= r.penaltis_fora ?? '' %>" inputmode="numeric" aria-label="Pênaltis visitante" />
+            </div>
+          </div>
+        </div>
+      <% } %>
+    <% }); %>
+  </div>
+
+  <div class="barra-acoes">
+    <button class="btn" type="submit">💾 Salvar <%= FASE_LABEL[faseAtual] %></button>
+  </div>
+</form>
+
+<% if (faseAtual === 'final') { %>
+  <h2 class="admin-secao">🌟 Palpites Especiais (resultado real)</h2>
+  <p style="color:var(--muted);font-size:.9rem;margin-top:0">
+    Os finalistas são deduzidos automaticamente do Jogo 104 (a Final). Informe
+    aqui o artilheiro e o campeão reais.
+  </p>
+  <form method="post" action="/admin/especiais">
+    <div class="admin-times" style="grid-template-columns:1fr 1fr;max-width:520px">
+      <div>
+        <label style="font-size:.8rem;font-weight:700">Artilheiro</label>
+        <input type="text" name="artilheiro" value="<%= espReais.artilheiro ?? '' %>" placeholder="Nome do artilheiro" />
+      </div>
+      <div>
+        <label style="font-size:.8rem;font-weight:700">Campeão</label>
+        <input type="text" name="campeao" list="selecoes" value="<%= espReais.campeao ?? '' %>" placeholder="Seleção campeã" />
+      </div>
+    </div>
+    <div class="barra-acoes"><button class="btn btn--gold" type="submit">💾 Salvar Especiais</button></div>
+  </form>
+<% } %>
+
+<form method="post" action="/admin/logout" style="margin-top:1.5rem">
+  <button class="btn btn--ghost" type="submit">Sair</button>
+</form>
+
+<%- include('partials/foot') %>

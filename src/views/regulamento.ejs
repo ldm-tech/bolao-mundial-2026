@@ -1,0 +1,80 @@
+<%- include('partials/head') %>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Como Funciona</span>
+  <h1>Regulamento</h1>
+  <p>As regras de pontuação e a premiação do Bolão Pedreira &amp; Amigos 2026.</p>
+</div>
+
+<!-- ===================== PREMIAÇÃO ===================== -->
+<h2 class="admin-secao" style="margin-top:0">🏆 Premiação</h2>
+<ul>
+  <li>1º Lugar — 60% do bolão</li>
+  <li>2º Lugar — 20%</li>
+  <li>3º Lugar — 10%</li>
+  <li>Campeão da 1ª Fase — 5%</li>
+  <li>Consolação (meio da tabela) — 5%</li>
+</ul>
+<p style="color:var(--muted);font-size:.9rem">Valor da aposta: R$ 80 por participante. Os valores em reais são administrados pela organização.</p>
+
+<!-- ===================== PONTUAÇÃO ===================== -->
+<h2 class="admin-secao">⚽ Pontuação dos jogos</h2>
+<p style="color:var(--muted);margin-top:0">Vale para todas as partidas (fase de grupos e mata-mata).</p>
+<section class="painel" style="margin-bottom:1.4rem">
+  <table class="tabela">
+    <thead><tr><th>Acerto</th><th class="col-num">Pontos</th></tr></thead>
+    <tbody>
+      <tr><td>Placar exato da partida</td><td class="col-num"><span class="pts-total">35</span></td></tr>
+      <tr><td>Vencedor + nº de gols de uma das equipes</td><td class="col-num"><span class="pts-total">20</span></td></tr>
+      <tr><td>Vencedor / empate (sem acertar os gols)</td><td class="col-num"><span class="pts-total">10</span></td></tr>
+      <tr><td>Apenas o nº de gols de uma das equipes</td><td class="col-num"><span class="pts-total">5</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== MATA-MATA ===================== -->
+<h2 class="admin-secao">🏟️ Bônus do mata-mata</h2>
+<p style="color:var(--muted);margin-top:0">
+  Pontos extras por acertar quem avança em cada fase (além dos pontos de placar).
+  <strong>O mando importa</strong>: o time precisa estar no lado certo (mandante ×
+  visitante). <strong>Confronto</strong> = as duas seleções certas, cada uma no
+  seu lado; <strong>seleção</strong> = cada seleção certa no lado certo. Time
+  certo no lado errado não pontua.
+</p>
+<section class="painel" style="margin-bottom:1.4rem">
+  <table class="tabela">
+    <thead><tr><th>Fase</th><th class="col-num">Confronto</th><th class="col-num">Seleção</th></tr></thead>
+    <tbody>
+      <tr><td>16-avos de final</td><td class="col-num"><span class="pts-total">30</span></td><td class="col-num"><span class="pts-total">15</span></td></tr>
+      <tr><td>Oitavas de final</td><td class="col-num"><span class="pts-total">50</span></td><td class="col-num"><span class="pts-total">25</span></td></tr>
+      <tr><td>Quartas de final</td><td class="col-num"><span class="pts-total">75</span></td><td class="col-num"><span class="pts-total">35</span></td></tr>
+      <tr><td>Semifinais</td><td class="col-num"><span class="pts-total">100</span></td><td class="col-num"><span class="pts-total">50</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== ESPECIAIS ===================== -->
+<h2 class="admin-secao">🌟 Palpites especiais</h2>
+<section class="painel" style="margin-bottom:1.4rem">
+  <table class="tabela">
+    <thead><tr><th>Acerto</th><th class="col-num">Pontos</th></tr></thead>
+    <tbody>
+      <tr><td>Artilheiro da Copa</td><td class="col-num"><span class="pts-total">100</span></td></tr>
+      <tr><td>Acertar as 2 seleções finalistas</td><td class="col-num"><span class="pts-total">200</span></td></tr>
+      <tr><td>Acertar o campeão</td><td class="col-num"><span class="pts-total">500</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== OBSERVAÇÕES ===================== -->
+<h2 class="admin-secao">📋 Observações</h2>
+<section class="painel">
+  <ul style="margin:0;padding:1rem 1.1rem 1rem 2.2rem;line-height:1.7">
+    <li>Os palpites de todos já estão registrados e não podem ser alterados.</li>
+    <li>Nos mata-matas, o placar dos <strong>pênaltis não conta pontos</strong> — serve só para indicar quem o jogador acha que se classifica.</li>
+    <li>Vence o bolão que somar mais pontos no total geral ao fim da Copa.</li>
+    <li>O mais importante é se divertir com os amigos e amigas. Boa sorte! 🍀</li>
+  </ul>
+</section>
+
+<%- include('partials/foot') %>

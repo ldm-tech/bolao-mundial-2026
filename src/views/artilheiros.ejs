@@ -1,0 +1,87 @@
+<%- include('partials/head') %>
+
+<%
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function img(src) {
+  return src ? '<img class="flag" src="' + esc(src) + '" alt="" loading="lazy" />' : '';
+}
+%>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Premiação · Artilheiro</span>
+  <h1>Artilheiros da Copa</h1>
+  <p>Quem está fazendo gol e quem apostou em cada um. Cravar o artilheiro vale <strong>100 pontos</strong> no bolão.</p>
+</div>
+
+<% if (maxGols > 0 && lideres.length) { %>
+  <section class="painel art-lider art-secao">
+    <div class="painel__titulo">
+      <h2>🏆 Quem tá levando o artilheiro</h2>
+      <span class="chip"><%= maxGols %> gol<%= maxGols > 1 ? 's' : '' %></span>
+    </div>
+    <div class="art-lideres">
+      <% lideres.forEach(function (l) { %>
+        <span class="time-chip art-lider-chip"><%- img(l.flag) %><span><%= esc(l.nome) %></span></span>
+      <% }); %>
+    </div>
+    <% if (acertando.length) { %>
+      <p class="art-lider__sub"><strong><%= acertando.length %></strong> apostaram no líder:</p>
+      <div class="time-chips">
+        <% acertando.forEach(function (n) { %><span class="time-chip"><span><%= esc(n) %></span></span><% }); %>
+      </div>
+    <% } else { %>
+      <p class="art-lider__sub">😅 Ninguém apostou no líder de gols ainda — o artilheiro tá em aberto!</p>
+    <% } %>
+  </section>
+<% } else { %>
+  <p class="vazio">A artilharia da Copa ainda não começou a contar (ou os dados ainda não chegaram). Volte depois dos primeiros gols! ⚽</p>
+<% } %>
+
+<% if (ranking.length) { %>
+  <section class="painel art-secao">
+    <div class="painel__titulo">
+      <h2>⚽ Goleadores da Copa</h2>
+      <span class="chip">gols na Copa</span>
+    </div>
+    <div class="pop-lista art-goleadores">
+      <% ranking.forEach(function (s) { %>
+        <div class="pop-item">
+          <div class="pop-item__time">
+            <%- img(s.flag) %><span><%= esc(s.nome) %></span>
+            <% if (s.nApostas) { %> <b class="art-badge"><%= s.nApostas %> no bolão</b><% } %>
+          </div>
+          <div class="pop-item__barra"><span style="width: <%= maxGols ? Math.round(s.gols / maxGols * 100) : 0 %>%"></span></div>
+          <div class="pop-item__pct"><%= s.gols %> ⚽</div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+<% } %>
+
+<% if (linhasBolao.length) { %>
+  <section class="painel art-secao">
+    <div class="painel__titulo">
+      <h2>📊 No que o bolão apostou</h2>
+      <span class="chip"><%= totalPalpites %> palpites</span>
+    </div>
+    <div class="art-bolao">
+      <% linhasBolao.forEach(function (p) { %>
+        <details class="art-aposta<%= p.lider ? ' art-aposta--lider' : '' %>">
+          <summary>
+            <%- img(p.flag) %>
+            <span class="art-aposta__nome"><%= esc(p.nome) %></span>
+            <span class="art-aposta__meta"><%= p.nApostas %> palpite<%= p.nApostas > 1 ? 's' : '' %> · <strong><%= p.gols %> ⚽</strong></span>
+          </summary>
+          <div class="time-chips">
+            <% p.apostadores.forEach(function (n) { %><span class="time-chip"><span><%= esc(n) %></span></span><% }); %>
+          </div>
+        </details>
+      <% }); %>
+    </div>
+  </section>
+<% } %>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,1048 @@
+:root {
+  --pitch-900: #0a3326;
+  --pitch-700: #0e5238;
+  --pitch-500: #15794f;
+  --cream: #f4eedd;
+  --paper: #fffdf6;
+  --ink: #16211c;
+  --muted: #5c6b62;
+  --gold: #e0a82e;
+  --silver: #aeb6bb;
+  --bronze: #c67f45;
+  --accent: #e8503a;
+  --line: rgba(18, 40, 28, 0.12);
+  --shadow: 0 10px 30px -12px rgba(10, 51, 38, 0.35);
+  --radius: 16px;
+  --maxw: 980px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: var(--ink);
+  background-color: var(--cream);
+  background-image:
+    radial-gradient(circle at 15% -10%, rgba(21, 121, 79, 0.1), transparent 40%),
+    radial-gradient(circle at 90% 0%, rgba(224, 168, 46, 0.12), transparent 35%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+h1, h2, h3 { line-height: 1.05; margin: 0; }
+
+a { color: inherit; }
+
+/* ---------------- Cabecalho ---------------- */
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(120deg, var(--pitch-900), var(--pitch-700));
+  color: var(--paper);
+  box-shadow: 0 4px 20px -6px rgba(10, 51, 38, 0.5);
+  border-bottom: 3px solid var(--gold);
+}
+.topo__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.7rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.marca { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; color: inherit; }
+.marca__trof { font-size: 1.5rem; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)); }
+.marca__txt { display: flex; flex-direction: column; line-height: 1; }
+.marca__txt strong {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.06em;
+  font-weight: 400;
+}
+.marca__txt em {
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  color: var(--gold);
+  font-weight: 700;
+}
+.nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.nav a {
+  text-decoration: none;
+  color: rgba(255, 253, 246, 0.82);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  transition: background 0.18s, color 0.18s;
+}
+.nav a:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.nav a.ativo { background: var(--gold); color: var(--pitch-900); }
+.nav__admin { border: 1px solid rgba(255, 255, 255, 0.25); }
+
+/* ---------------- Layout ---------------- */
+.conteudo {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.6rem 1.1rem 3rem;
+}
+.cabecalho-pagina { margin-bottom: 1.4rem; }
+.cabecalho-pagina h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.1rem, 7vw, 3.2rem);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+.cabecalho-pagina p { color: var(--muted); margin: 0.2rem 0 0; max-width: 60ch; }
+.kicker {
+  display: inline-block;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--pitch-500);
+  margin-bottom: 0.35rem;
+}
+
+/* ---------------- Podio ---------------- */
+.podio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+.podio__card {
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 1.1rem 0.7rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  animation: sobe 0.5s both;
+}
+.podio__card:nth-child(1) { animation-delay: 0.05s; }
+.podio__card:nth-child(2) { animation-delay: 0.12s; }
+.podio__card:nth-child(3) { animation-delay: 0.19s; }
+.podio__card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 6px;
+}
+.podio__card--1 { transform: translateY(-12px); border-color: rgba(224, 168, 46, 0.5); }
+.podio__card--1::before { background: var(--gold); }
+.podio__card--2::before { background: var(--silver); }
+.podio__card--3::before { background: var(--bronze); }
+.podio__medalha { font-size: 1.7rem; line-height: 1; }
+.podio__pos {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.podio__nome {
+  font-weight: 800;
+  font-size: clamp(0.95rem, 3.4vw, 1.25rem);
+  margin: 0.15rem 0;
+  word-break: break-word;
+}
+.podio__pts {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.6rem, 7vw, 2.4rem);
+  color: var(--pitch-700);
+  letter-spacing: 0.02em;
+}
+.podio__pts span { font-size: 0.5em; color: var(--muted); letter-spacing: 0.1em; }
+
+/* ---------------- Tabela de ranking ---------------- */
+.painel {
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.painel__titulo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem 0.6rem;
+}
+.painel__titulo h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+}
+.tabela { width: 100%; border-collapse: collapse; }
+.tabela th, .tabela td { padding: 0.7rem 0.6rem; text-align: left; }
+.tabela thead th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+}
+.tabela tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
+.tabela tbody tr:last-child { border-bottom: 0; }
+.tabela tbody tr:hover { background: rgba(21, 121, 79, 0.05); }
+.tabela a { text-decoration: none; font-weight: 700; }
+.tabela a:hover { color: var(--pitch-500); text-decoration: underline; }
+.col-pos { width: 3rem; text-align: center; }
+.col-num { text-align: right; font-variant-numeric: tabular-nums; }
+.pos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  background: rgba(18, 40, 28, 0.07);
+  color: var(--ink);
+}
+.pos-badge--1 { background: var(--gold); color: var(--pitch-900); }
+.pos-badge--2 { background: var(--silver); color: var(--pitch-900); }
+.pos-badge--3 { background: var(--bronze); color: #fff; }
+.pts-total {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--pitch-700);
+  letter-spacing: 0.02em;
+}
+.chip {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(21, 121, 79, 0.12);
+  color: var(--pitch-700);
+}
+
+/* ---------------- Pills / filtros de fase ---------------- */
+.pills { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0.2rem 0 0.9rem; }
+.pills a {
+  white-space: nowrap;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.pills a.ativo { background: var(--pitch-700); color: var(--paper); border-color: var(--pitch-700); }
+
+/* ---------------- Cartoes de jogo ---------------- */
+.jogo-card {
+  background: var(--paper);
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 14px -10px rgba(10, 51, 38, 0.4);
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  scroll-margin-top: 110px; /* desvia do cabecalho sticky ao ancorar (#jogo-N) */
+}
+/* jogo alvo da ancora (abertura direta no jogo ao vivo): destaque rapido */
+.jogo-card:target {
+  border-color: var(--pitch-700, #157347);
+  box-shadow: 0 0 0 2px var(--pitch-700, #157347), 0 8px 22px -10px rgba(10, 51, 38, 0.5);
+  animation: jogo-alvo-pulso 1.6s ease-out 1;
+}
+@keyframes jogo-alvo-pulso {
+  0% { box-shadow: 0 0 0 4px rgba(21, 115, 71, 0.55), 0 8px 22px -10px rgba(10, 51, 38, 0.5); }
+  100% { box-shadow: 0 0 0 2px var(--pitch-700, #157347), 0 8px 22px -10px rgba(10, 51, 38, 0.5); }
+}
+.jogo-card__topo {
+  padding: 0.5rem 0.9rem;
+  background: rgba(21, 121, 79, 0.06);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.jogo-card__fase {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--pitch-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.jogo-card__meta { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+.jogo-card__num { font-weight: 800; color: var(--pitch-700); }
+.jogo-card__placar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 0.9rem;
+}
+.jogo-card__time { font-weight: 700; }
+.jogo-card__time--casa { text-align: right; }
+.jogo-card__gols {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.7rem;
+  background: var(--pitch-900);
+  color: var(--paper);
+  border-radius: 10px;
+  padding: 0.1rem 0.7rem;
+  letter-spacing: 0.06em;
+  min-width: 4.2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.05;
+}
+.jogo-card__minuto {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 1px;
+}
+.jogo-card__gols--vazio { background: rgba(18, 40, 28, 0.12); color: var(--muted); }
+.jogo-card__penaltis {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 0 0.9rem 0.5rem;
+  margin-top: -0.3rem;
+}
+.jogo-card__penaltis strong { color: var(--pitch-700); }
+.palpites-lista { padding: 0 0.9rem 0.8rem; }
+.palpites-lista summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pitch-500);
+  padding: 0.4rem 0;
+}
+.palpites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.palpite-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  font-size: 0.82rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 10px;
+  background: var(--cream);
+}
+.palpite-item__nome { font-weight: 800; }
+.palpite-item__times { font-size: 0.7rem; color: var(--muted); }
+.palpite-item__placar { display: inline-flex; align-items: center; gap: 6px; }
+.palpite-item__pts { font-weight: 800; font-size: 0.74rem; color: var(--pitch-700); }
+.pen-mini { color: var(--muted); }
+.acerto-35 { background: rgba(224, 168, 46, 0.25); }
+.acerto-20 { background: rgba(21, 121, 79, 0.16); }
+.acerto-10 { background: rgba(21, 121, 79, 0.08); }
+.acerto-5 { background: rgba(232, 80, 58, 0.1); }
+
+/* ---------------- Detalhe do jogador ---------------- */
+.resumo-fases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.4rem;
+}
+.fase-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  box-shadow: 0 3px 12px -10px rgba(10, 51, 38, 0.4);
+}
+.fase-box span { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+.fase-box strong { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--pitch-700); font-weight: 400; }
+.especiais-box {
+  background: linear-gradient(120deg, var(--pitch-900), var(--pitch-700));
+  color: var(--paper);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.4rem;
+  box-shadow: var(--shadow);
+}
+.especiais-box h3 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; letter-spacing: 0.05em; font-size: 1.3rem; color: var(--gold); }
+.especiais-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-top: 0.6rem; }
+.especiais-grid div { font-size: 0.9rem; }
+.especiais-grid b { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
+
+/* ---------------- Admin ---------------- */
+.aviso {
+  background: rgba(21, 121, 79, 0.12);
+  border: 1px solid rgba(21, 121, 79, 0.3);
+  color: var(--pitch-700);
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.admin-grid { display: grid; gap: 0.5rem; }
+.admin-jg {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+}
+.admin-jg__conf { font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; }
+.admin-jg__n {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+.admin-jg__inputs { display: inline-flex; align-items: center; gap: 0.4rem; }
+.admin-jg__inputs input { width: 3rem; text-align: center; }
+.admin-jogo {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+}
+.admin-jogo__n { font-weight: 800; color: var(--muted); font-size: 0.85rem; text-align: center; }
+.admin-jogo input[type='number'] { width: 100%; }
+.admin-jogo__meio { display: flex; gap: 0.3rem; align-items: center; }
+.admin-times { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.admin-penaltis {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--line);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.admin-penaltis small { opacity: 0.7; }
+.admin-penaltis > div { display: flex; align-items: center; gap: 0.3rem; }
+.admin-penaltis input { max-width: 4rem; }
+input, button, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+input[type='text'], input[type='number'], input[type='password'] {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-color: var(--pitch-500); }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--pitch-700);
+  color: var(--paper);
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s, background 0.15s;
+}
+.btn:hover { background: var(--pitch-500); transform: translateY(-1px); }
+.btn--gold { background: var(--gold); color: var(--pitch-900); }
+.btn--ghost { background: transparent; color: var(--muted); box-shadow: none; border: 1px solid var(--line); }
+.barra-acoes { position: sticky; bottom: 0; padding: 0.9rem 0; display: flex; gap: 0.6rem; justify-content: flex-end; background: linear-gradient(transparent, var(--cream) 35%); }
+.login-card { max-width: 360px; margin: 3rem auto; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow); text-align: center; }
+.login-card h1 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 2rem; letter-spacing: 0.04em; }
+.login-card form { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; }
+.erro { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+.admin-secao { margin: 1.4rem 0 0.6rem; font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 1.3rem; letter-spacing: 0.04em; color: var(--pitch-700); }
+
+/* ---------------- Ao vivo / parcial ---------------- */
+.banner-vivo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: rgba(232, 80, 58, 0.1);
+  border: 1px solid rgba(232, 80, 58, 0.3);
+  color: #b23a28;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.2rem;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.banner-vivo .ponto-vivo { margin-top: 0.35rem; }
+.banner-vivo--parcial {
+  background: rgba(224, 168, 46, 0.14);
+  border-color: rgba(224, 168, 46, 0.45);
+  color: #92670f;
+}
+.ponto-vivo {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e8503a;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: pulso 1.4s infinite;
+}
+@keyframes pulso {
+  0% { box-shadow: 0 0 0 0 rgba(232, 80, 58, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(232, 80, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(232, 80, 58, 0); }
+}
+.selo-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8503a;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-right: 5px;
+  vertical-align: 1px;
+}
+.selo-vivo .ponto-vivo { width: 6px; height: 6px; background: #fff; animation: none; }
+.selo-parcial {
+  display: inline-block;
+  background: rgba(224, 168, 46, 0.22);
+  color: #92670f;
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-right: 5px;
+  vertical-align: 1px;
+}
+
+/* ---------------- Bandeiras inline ---------------- */
+.flag {
+  width: 1.2em; /* caixa fixa 3:2 para padronizar todas as bandeiras */
+  height: 0.8em;
+  object-fit: cover;
+  border-radius: 2px;
+  vertical-align: -0.08em;
+  margin-right: 5px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------------- Classificados ---------------- */
+.consenso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.7rem;
+  background: rgba(21, 121, 79, 0.08);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+}
+.consenso__rotulo { font-weight: 800; font-size: 0.82rem; color: var(--pitch-700); }
+.time-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 4px;
+  border-radius: 999px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.time-chip img {
+  width: 21px; /* caixa fixa 3:2 */
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.classif-pessoa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.classif-pessoa:last-child { border-bottom: 0; }
+.classif-pessoa__nome {
+  font-weight: 800;
+  color: var(--pitch-700);
+  min-width: 5rem;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.vazio-mini { color: var(--muted); font-size: 0.85rem; }
+.time-chip__badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--pitch-700);
+  background: rgba(21, 121, 79, 0.14);
+  border-radius: 4px;
+  padding: 0 4px;
+  letter-spacing: 0.02em;
+}
+.confronto-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.confronto-chip img {
+  width: 21px;
+  height: 14px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.confronto-chip .vs { color: var(--muted); font-style: normal; font-weight: 400; margin: 0 1px; }
+
+/* ---------------- Jogo a jogo (detalhe do jogador) ---------------- */
+.jj-fase {
+  background: rgba(21, 121, 79, 0.07);
+  font-weight: 800;
+  color: var(--pitch-700);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.9rem;
+}
+.jj-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+.jj-row:last-child { border-bottom: 0; }
+.jj-num { flex-shrink: 0; width: 1.7rem; text-align: center; color: var(--muted); font-size: 0.85rem; font-weight: 700; }
+.jj-conf { flex: 1; text-align: center; min-width: 0; }
+.jj-times { font-weight: 700; font-size: 0.9rem; }
+.jj-x { color: var(--muted); font-weight: 400; margin: 0 1px; }
+.jj-sub { font-size: 0.73rem; color: var(--muted); margin-top: 1px; }
+.jj-pts {
+  flex-shrink: 0;
+  width: 2.3rem;
+  text-align: right;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  color: var(--pitch-700);
+}
+.jj-pts--zero { color: var(--muted); }
+
+/* ---------------- Odds ---------------- */
+.odds-legenda {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.odds-legenda span { display: inline-flex; align-items: center; gap: 5px; }
+.pt { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.pt--casa { background: #15794f; }
+.pt--empate { background: #aeb6bb; }
+.pt--fora { background: #3f6fa3; }
+.odds-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px -10px rgba(10, 51, 38, 0.4);
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.7rem;
+}
+.odds-card__times {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+.odds-card__x { color: var(--muted); font-weight: 400; }
+.odds-tag {
+  font-size: 0.66rem;
+  font-weight: 800;
+  background: rgba(232, 80, 58, 0.12);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.odds-linha { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem; }
+.odds-linha__lbl {
+  flex-shrink: 0;
+  width: 4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: right;
+}
+.odds-barra {
+  flex: 1;
+  display: flex;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.odds-barra .seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+}
+.seg--casa { background: #15794f; }
+.seg--empate { background: #aeb6bb; }
+.seg--fora { background: #3f6fa3; }
+.odds-sem { font-size: 0.78rem; color: var(--muted); }
+.odds-linha--vazia { opacity: 0.8; }
+
+/* ---------------- Rodape ---------------- */
+.rodape { text-align: center; padding: 2rem 1rem; color: var(--muted); border-top: 1px solid var(--line); margin-top: 2rem; }
+.rodape p { margin: 0.2rem 0; }
+.rodape__sub { font-size: 0.85rem; }
+.powered {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  transition: box-shadow 0.18s, transform 0.12s;
+}
+.powered:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.powered img { height: 26px; width: auto; display: block; }
+.powered strong { color: var(--pitch-700); letter-spacing: 0.02em; }
+
+.vazio { text-align: center; color: var(--muted); padding: 2.5rem 1rem; }
+
+@keyframes sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.podio__card--1 { animation-name: sobeDestaque; }
+@keyframes sobeDestaque { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(-12px); } }
+
+/* ---------------- Responsivo ---------------- */
+@media (max-width: 640px) {
+  .esconde-mobile { display: none; }
+  .tabela th, .tabela td { padding: 0.6rem 0.4rem; }
+  .marca__txt strong { font-size: 1.2rem; }
+  /* cabecalho centralizado e menu compacto (em vez de quebra desalinhada) */
+  .topo__inner { flex-direction: column; align-items: center; gap: 0.5rem; }
+  .nav { justify-content: center; gap: 0.25rem; }
+  .nav a { font-size: 0.8rem; padding: 0.3rem 0.6rem; }
+  .admin-jogo { grid-template-columns: 1.8rem 1fr auto 1fr; font-size: 0.9rem; }
+}
+
+/* ---------------- Ranking 102 (Pedreira) ---------------- */
+.premio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: 1rem 0; }
+.premio-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+  padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; }
+.premio-card__ic { font-size: 1.4rem; }
+.premio-card__rot { font-size: .78rem; color: var(--muted); }
+.premio-card__nome { font-weight: 700; }
+.busca-wrap { position: relative; margin: 1rem 0 .4rem; }
+.busca-wrap input { width: 100%; padding: .7rem .9rem; border-radius: 12px; border: 1px solid var(--line);
+  font: inherit; background: var(--paper); }
+.linha-fixada { position: sticky; top: 64px; z-index: 5; }
+.tabela tr.linha-eu, .linha-fixada.linha-eu td { background: #fbf3da; }
+.linha-fixada.linha-eu { display: table; width: 100%; border: 2px solid var(--gold); border-radius: 10px;
+  margin-bottom: .5rem; box-shadow: var(--shadow); }
+@media (max-width: 560px) { .premio-cards { grid-template-columns: 1fr; } }
+
+.marca__logo { width: 40px; height: 40px; object-fit: contain; display: block;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+
+/* ---------------- Botao de feedback -> Linear (so dominio LDM) ---------------- */
+.fb-botao {
+  position: fixed; left: 16px; bottom: 16px; z-index: 60;
+  display: inline-flex; align-items: center; gap: .4rem;
+  font: 600 .9rem/1 'Hanken Grotesk', system-ui, sans-serif;
+  color: var(--paper); background: linear-gradient(120deg, var(--pitch-700), var(--pitch-500));
+  border: 1px solid rgba(255,255,255,.15); border-radius: 999px;
+  padding: .6rem .9rem; cursor: pointer; box-shadow: var(--shadow);
+}
+.fb-botao:hover { filter: brightness(1.07); }
+.fb-overlay {
+  position: fixed; inset: 0; z-index: 70; background: rgba(10,51,38,.45);
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.fb-overlay[hidden] { display: none; }
+.fb-modal {
+  background: var(--paper); color: var(--ink); width: 100%; max-width: 440px;
+  border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--line);
+  padding: 1.1rem 1.2rem;
+}
+.fb-modal__topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+.fb-modal__topo h2 { font-size: 1.15rem; }
+.fb-x { background: none; border: 0; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--muted); }
+.fb-form { display: flex; flex-direction: column; gap: .7rem; }
+.fb-label { display: flex; flex-direction: column; gap: .25rem; font-size: .82rem; font-weight: 700; color: var(--muted); }
+.fb-opc { font-weight: 400; }
+.fb-input {
+  font: inherit; color: var(--ink); background: var(--cream);
+  border: 1px solid var(--line); border-radius: 10px; padding: .55rem .65rem; width: 100%;
+}
+.fb-input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.fb-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.fb-acoes { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .2rem; }
+.fb-cancelar, .fb-enviar { font: 600 .9rem 'Hanken Grotesk', system-ui, sans-serif; border-radius: 10px; padding: .55rem .9rem; cursor: pointer; border: 1px solid var(--line); }
+.fb-cancelar { background: transparent; color: var(--muted); }
+.fb-enviar { background: var(--gold); color: #3a2a05; border-color: transparent; }
+.fb-enviar:disabled { opacity: .6; cursor: progress; }
+.fb-status { margin: .2rem 0 0; font-size: .85rem; min-height: 1.1em; }
+.fb-status--ok { color: var(--pitch-500); font-weight: 700; }
+.fb-status--erro { color: var(--accent); font-weight: 700; }
+
+/* ---------------- Popularidade das selecoes (Classificados) ---------------- */
+.pop-lista { display: flex; flex-direction: column; gap: .35rem; }
+.pop-item { display: grid; grid-template-columns: 11rem 1fr 3rem; align-items: center; gap: .6rem; }
+.pop-item__time { display: flex; align-items: center; gap: .4rem; font-size: .9rem; min-width: 0; }
+.pop-item__time img { width: 1.3rem; height: auto; border-radius: 2px; flex-shrink: 0; }
+.pop-item__time span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pop-item__barra { background: rgba(18,40,28,.08); border-radius: 999px; height: .7rem; overflow: hidden; }
+.pop-item__barra span { display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--pitch-500), var(--gold)); }
+.pop-item__pct { font-weight: 700; font-size: .85rem; text-align: right; color: var(--pitch-700); }
+@media (max-width: 560px) { .pop-item { grid-template-columns: 8rem 1fr 2.6rem; } }
+
+/* ajustes popularidade: respiro lateral + sem quebra no titulo/chip */
+.pop-lista { padding: 0 1.1rem 1rem; }
+.painel__titulo { flex-wrap: wrap; }
+.painel__titulo .chip { white-space: nowrap; }
+
+/* mobile: confrontos 1 por linha (cards) e 16-avos centralizados (desktop intacto) */
+@media (max-width: 560px) {
+  .consenso { justify-content: center; }
+  .consenso .time-chips { width: 100%; justify-content: center; }
+  .classif-pessoa .time-chips { width: 100%; justify-content: center; }
+  .time-chips--conf { flex-direction: column; align-items: center; }
+  .time-chips--conf .confronto-chip {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem 0.6rem;
+    background: var(--paper);
+  }
+}
+
+/* ---------------- Pin no ranking (multi) ---------------- */
+.pin-btn { background: none; border: 0; cursor: pointer; font-size: 0.95rem; line-height: 1;
+  padding: 0 0 0 .4rem; opacity: .3; filter: grayscale(1); vertical-align: middle; }
+.pin-btn:hover { opacity: .75; filter: grayscale(0); }
+.is-pinned .pin-btn { opacity: 1; filter: none; }
+.tabela tr.is-pinned td { background: #fbf3da; }
+.painel--fixados { margin-bottom: 1rem; border-color: rgba(224, 168, 46, 0.55); }
+
+/* ---------------- Quem secar (jogo ao vivo) ---------------- */
+.secador {
+  margin: 0.6rem 0.9rem 0.5rem;
+  border: 2px solid var(--gold);
+  background: linear-gradient(180deg, #fbf6e6, var(--paper));
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+.secador__titulo { font-weight: 800; color: #6b4e0a; font-size: 0.98rem; }
+.secador__sub { font-weight: 600; color: var(--muted); font-size: 0.8rem; }
+.secador__sec { font-size: 0.78rem; color: var(--muted); margin: 0.6rem 0 0.35rem; font-weight: 700; }
+.secador__chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.secador-chip {
+  display: inline-flex; align-items: baseline; gap: 0.3rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.25rem 0.7rem; font-size: 0.82rem; font-weight: 600;
+}
+.secador-chip--ok { background: var(--pitch-700); color: #fff; border-color: transparent; }
+.secador-falta { color: var(--muted); font-weight: 400; font-size: 0.74rem; }
+.secador-chip--ok .secador-falta { color: rgba(255,255,255,0.8); }
+.secador__mais { font-size: 0.76rem; color: var(--muted); margin-top: 0.4rem; }
+
+/* ---------------- Comemoracao de gol ---------------- */
+.gol-som-toggle {
+  position: fixed; right: 16px; bottom: 16px; z-index: 60;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--paper);
+  box-shadow: 0 4px 14px -6px rgba(10, 51, 38, 0.5);
+  font-size: 1.2rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.12s ease;
+}
+.gol-som-toggle:hover { transform: translateY(-1px); }
+.gol-pop {
+  position: fixed; top: 14%; left: 50%; transform: translateX(-50%);
+  z-index: 65; pointer-events: none; text-align: center;
+  animation: gol-in 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both,
+             gol-out 0.5s ease-in 3.6s both;
+}
+@keyframes gol-in {
+  from { opacity: 0; transform: translateX(-50%) scale(0.7); }
+  to { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+@keyframes gol-out {
+  to { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(0.95); }
+}
+.gol-pop__bola { font-size: 3.4rem; line-height: 1; animation: gol-bola 1.1s ease-in-out infinite; }
+@keyframes gol-bola {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-24px) rotate(180deg); }
+}
+.gol-pop__card {
+  margin-top: 0.2rem; display: inline-block;
+  background: var(--paper); border: 2px solid var(--pitch-700, #157347);
+  border-radius: 14px; padding: 0.6rem 1.2rem;
+  box-shadow: 0 14px 34px -10px rgba(10, 51, 38, 0.55);
+}
+.gol-pop__titulo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 0.9;
+  letter-spacing: 0.04em; color: var(--pitch-700, #157347);
+  text-shadow: 0 3px 0 rgba(10, 51, 38, 0.12);
+}
+.gol-pop__time {
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font-weight: 800; margin-top: 0.25rem;
+}
+.gol-pop__time img.flag { width: 1.4em; }
+.gol-pop__placar { font-weight: 800; opacity: 0.75; margin-top: 0.1rem; }
+.jogo-card--gol { animation: jogo-gol 1.1s ease-out 2; }
+@keyframes jogo-gol {
+  0% { box-shadow: 0 0 0 0 rgba(21, 115, 71, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(21, 115, 71, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(21, 115, 71, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gol-pop__bola, .jogo-card--gol { animation: none; }
+  .gol-pop { animation: gol-out 0.5s ease 3.6s both; }
+}
+
+/* ---------------- Artilheiros ---------------- */
+.art-secao { margin-bottom: 1rem; }
+.art-lider { border: 2px solid var(--pitch-700, #157347); padding-bottom: 0.85rem; }
+/* conteudo do box (menos o titulo) ganha respiro lateral */
+.art-lider > *:not(.painel__titulo) { padding-left: 1.1rem; padding-right: 1.1rem; }
+.art-lideres { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.2rem 0 0.4rem; }
+.art-lider-chip { font-weight: 800; border-color: var(--pitch-700, #157347); }
+.art-lider__sub { margin: 0.55rem 0 0.4rem; font-size: 0.9rem; }
+.art-badge {
+  font-size: 0.68rem; font-weight: 700; color: var(--pitch-700, #157347);
+  background: rgba(21, 115, 71, 0.12); padding: 0.05rem 0.4rem; border-radius: 6px;
+  margin-left: 0.3rem; white-space: nowrap; flex: 0 0 auto;
+}
+/* ranking: nome flexivel (nao trunca cedo); barra e gols com largura fixa */
+.art-goleadores .pop-item { grid-template-columns: minmax(0, 1fr) 3.5rem 2.8rem; }
+.art-goleadores .pop-item__time { min-width: 0; }
+@media (max-width: 560px) { .art-goleadores .pop-item { grid-template-columns: minmax(0, 1fr) 2.5rem 2.8rem; } }
+.art-bolao { display: flex; flex-direction: column; gap: 0.35rem; padding: 0 0.7rem 0.5rem; }
+.art-aposta > summary {
+  display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  list-style: none; padding: 0.5rem 0.4rem; border-radius: 8px;
+}
+.art-aposta > summary::-webkit-details-marker { display: none; }
+.art-aposta__nome { font-weight: 700; }
+.art-aposta__meta { margin-left: auto; color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.art-aposta--lider > summary { background: rgba(21, 115, 71, 0.08); }
+.art-aposta .time-chips { padding: 0.1rem 0.4rem 0.5rem; }
+
+/* ---------------- Grafico de evolucao (fixados) ---------------- */
+.evo { padding: 0.2rem 0.9rem 0.9rem; }
+.evo__titulo { font-weight: 800; font-size: 0.9rem; color: var(--pitch-900, #0a3326); margin: 0.5rem 0 0.5rem; }
+.evo__dica { font-weight: 400; font-size: 0.72rem; color: var(--muted); }
+.evo__wrap { position: relative; }
+.evo__svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.evo__grid { stroke: rgba(18, 40, 28, 0.1); stroke-width: 1; }
+.evo__yl { fill: var(--muted); font-size: 9px; text-anchor: end; }
+.evo__xl { fill: var(--muted); font-size: 9px; text-anchor: middle; }
+.evo__guia { stroke: rgba(18, 40, 28, 0.35); stroke-width: 1; stroke-dasharray: 3 3; }
+.evo__leg { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; margin-top: 0.5rem; font-size: 0.78rem; }
+.evo__leg-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+.evo__leg-item i, .evo__tip i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: 0 0 auto; }
+.evo__tip {
+  position: absolute; bottom: 4px; right: 4px; max-width: 62%;
+  background: var(--paper, #fff); border: 1px solid var(--line, #ddd); border-radius: 8px;
+  padding: 0.35rem 0.5rem; font-size: 0.74rem; pointer-events: none;
+  box-shadow: 0 6px 18px -8px rgba(10, 51, 38, 0.5);
+}
+.evo__tip-h { font-weight: 800; margin-bottom: 0.2rem; }
+.evo__tip span { display: flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
+.evo__vazio { color: var(--muted); font-size: 0.85rem; margin: 0.2rem 0 0.4rem; }
+
+/* ---------------- Autores dos gols (jogo ao vivo) ---------------- */
+.jogo-card__autores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem 0.9rem;
+  padding: 0 0.9rem 0.55rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.autores { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
+.autores--casa { text-align: right; align-items: flex-end; }
+.autores--fora { text-align: left; align-items: flex-start; }
+.autor { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.autor__min { font-weight: 700; color: var(--pitch-700, #157347); }
+.jogo-card__cartoes { border-top: 1px solid var(--line); padding-top: 0.45rem; }
+.cartao__ic { width: 8px; height: 11px; border-radius: 1px; display: inline-block; vertical-align: -1px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.cartao__ic--a { background: #f1c40f; }
+.cartao__ic--v { background: #c0392b; }
+
+/* ---------------- Curiosidades do jogo (estatisticas + bola na trave) ---------------- */
+.jogo-card__curiosidades { border-top: 1px solid var(--line); margin: 0 0.9rem; padding: 0.55rem 0 0.6rem; }
+.curio-stats { display: flex; flex-direction: column; gap: 0.32rem; }
+.curio-stat { display: grid; grid-template-columns: 2.6rem 1fr 2.6rem; align-items: center; column-gap: 0.5rem; font-size: 0.78rem; }
+.curio-stat__n { font-weight: 700; font-variant-numeric: tabular-nums; }
+.curio-stat__n--casa { text-align: right; }
+.curio-stat__n--fora { text-align: left; }
+.curio-stat__lb { text-align: center; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.curio-barra { grid-column: 1 / -1; height: 4px; margin-top: 0.18rem; border-radius: 2px; background: var(--line); overflow: hidden; }
+.curio-barra__casa { display: block; height: 100%; background: var(--pitch-700, #157347); }
+.curio-traves { margin-top: 0.55rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.55rem; font-size: 0.78rem; color: var(--muted); }
+.curio-traves__lb { font-weight: 700; }
+.curio-trave { white-space: nowrap; }

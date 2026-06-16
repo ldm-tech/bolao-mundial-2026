@@ -1,0 +1,14 @@
+  </main>
+  <footer class="rodape">
+    <p>⚽ <strong><%= NOME_BOLAO %></strong></p>
+    <p class="rodape__sub">Que vença o(a) melhor. O mais importante é se divertir!</p>
+    <a class="powered" href="https://ldm.com.br" target="_blank" rel="noopener noreferrer">
+      <img src="/ldm-logo.png" alt="LDM" onerror="this.style.display='none'" />
+      <span>Powered by <strong>LDM</strong></span>
+    </a>
+  </footer>
+  <% if (typeof feedbackOn !== 'undefined' && feedbackOn) { %>
+    <script src="/feedback.js" defer></script>
+  <% } %>
+</body>
+</html>

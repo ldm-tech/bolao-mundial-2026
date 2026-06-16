@@ -1,0 +1,65 @@
+<%- include('partials/head') %>
+
+<div data-auto-refresh data-versao="<%= versao %>">
+<div class="cabecalho-pagina">
+  <span class="kicker">Desempenho</span>
+  <h1><%= detalhe.jogador.nome %></h1>
+  <p>
+    Total de <strong><%= detalhe.total %> pontos</strong> —
+    <%= detalhe.totalPlacar %> de placares, <%= detalhe.totalBonus %> de bônus de
+    mata-mata e <%= detalhe.especiais.total %> de palpites especiais.
+  </p>
+</div>
+
+<section class="resumo-fases">
+  <% porFaseLista.forEach(function(f){ %>
+    <div class="fase-box">
+      <span><%= f.label %></span>
+      <strong><%= f.pontos %></strong>
+    </div>
+  <% }); %>
+</section>
+
+<section class="especiais-box">
+  <h3>🌟 Palpites Especiais — <%= detalhe.especiais.total %> pts</h3>
+  <div class="especiais-grid">
+    <div>
+      <b>Artilheiro <%= detalhe.especiais.artilheiro ? '✅ +100' : '' %></b>
+      <%= detalhe.palpiteEsp.artilheiro || '—' %>
+    </div>
+    <div>
+      <b>Finalistas <%= detalhe.especiais.finalistas ? '✅ +200' : '' %></b>
+      <%- flag(detalhe.palpiteEsp.finalista_1) %><%= detalhe.palpiteEsp.finalista_1 || '—' %>
+      &amp; <%- flag(detalhe.palpiteEsp.finalista_2) %><%= detalhe.palpiteEsp.finalista_2 || '—' %>
+    </div>
+    <div>
+      <b>Campeão <%= detalhe.especiais.campeao ? '✅ +500' : '' %></b>
+      <%- flag(detalhe.palpiteEsp.campeao) %><%= detalhe.palpiteEsp.campeao || '—' %>
+    </div>
+  </div>
+</section>
+
+<section class="painel">
+  <div class="painel__titulo"><h2>Jogo a Jogo</h2></div>
+  <div class="jj">
+    <% let faseAtual = null; %>
+    <% detalhe.linhas.forEach(function(l){ %>
+      <% if (l.fase !== faseAtual) { faseAtual = l.fase; %>
+        <div class="jj-fase"><%= l.faseLabel %></div>
+      <% } %>
+      <div class="jj-row">
+        <span class="jj-num"><%= l.numero %></span>
+        <div class="jj-conf">
+          <div class="jj-times"><%- flag(l.timeCasa) %><%= l.timeCasa || '?' %> <span class="jj-x">×</span> <%- flag(l.timeFora) %><%= l.timeFora || '?' %></div>
+          <div class="jj-sub">
+            Palpite <%= l.palpite %><% if (l.palpitePen) { %> (pên. <%= l.palpitePen %>)<% } %><% if (l.real) { %> · Real <%= l.real %><% if (l.realPen) { %> (pên. <%= l.realPen %>)<% } %><% if (l.estadoVivo === 'ao_vivo') { %> <span class="selo-vivo"><span class="ponto-vivo"></span>AO VIVO</span><% } else if (l.estadoVivo === 'parcial') { %> <span class="selo-parcial">PARCIAL</span><% } %><% } %>
+          </div>
+        </div>
+        <span class="jj-pts <%= (!l.real || l.pontos === 0) ? 'jj-pts--zero' : '' %>"><%= l.real ? l.pontos : '—' %></span>
+      </div>
+    <% }); %>
+  </div>
+</section>
+</div>
+
+<%- include('partials/foot') %>

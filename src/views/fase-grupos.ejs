@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Só Fase de Grupos</span>
+  <h1>Ranking da 1ª Fase</h1>
+  <p>
+    Pontuação considerando apenas os 72 jogos da fase de grupos — para
+    acompanhar quem foi melhor antes do mata-mata começar.
+  </p>
+</div>
+
+<section class="painel">
+  <div class="painel__titulo">
+    <h2>Só Fase de Grupos</h2>
+    <span class="chip">72 jogos</span>
+  </div>
+  <table class="tabela">
+    <thead>
+      <tr>
+        <th class="col-pos">#</th>
+        <th>Jogador</th>
+        <th class="col-num">Pontos (grupos)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% ranking.forEach(function(j){ %>
+        <tr>
+          <td class="col-pos">
+            <span class="pos-badge <%= j.posicao <= 3 ? 'pos-badge--' + j.posicao : '' %>"><%= j.posicao %></span>
+          </td>
+          <td><a href="/jogador/<%= j.id %>"><%= j.nome %></a></td>
+          <td class="col-num"><span class="pts-total"><%= j.total %></span></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/foot') %>

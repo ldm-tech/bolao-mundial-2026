@@ -1,0 +1,7 @@
+# Normaliza fim de linha: LF no repositorio, conversao automatica no checkout.
+* text=auto eol=lf
+
+# Arquivos binarios (nao normalizar)
+*.xlsx binary
+*.png binary
+*.db binary

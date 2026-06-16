@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A3326" />
+  <title><%= NOME_BOLAO %></title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏆%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/auto-refresh.js" defer></script>
+  <script src="/gol.js" defer></script>
+  <script src="/relogio-vivo.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <div class="topo__inner">
+      <a class="marca" href="/">
+        <img class="marca__logo" src="/pedreira-logo.png" alt="" width="40" height="40" />
+        <span class="marca__txt">
+          <strong>Bolão Pedreira</strong>
+          <em>&amp; Amigos 2026</em>
+        </span>
+      </a>
+      <nav class="nav">
+        <a href="/ranking" class="<%= (path === '/ranking' || path === '/') ? 'ativo' : '' %>">Ranking</a>
+        <a href="/fase-grupos" class="<%= path === '/fase-grupos' ? 'ativo' : '' %>">1ª Fase</a>
+        <a href="/premiacao" class="<%= path === '/premiacao' ? 'ativo' : '' %>">Premiação</a>
+        <a href="/artilheiros" class="<%= path === '/artilheiros' ? 'ativo' : '' %>">Artilheiros</a>
+        <a href="/jogos" class="<%= path === '/jogos' ? 'ativo' : '' %>">Jogos</a>
+        <a href="/classificados" class="<%= path === '/classificados' ? 'ativo' : '' %>">Classificados</a>
+        <a href="/odds" class="<%= path === '/odds' ? 'ativo' : '' %>">Odds</a>
+        <a href="/regulamento" class="<%= path === '/regulamento' ? 'ativo' : '' %>">Regras</a>
+        <a href="/admin" class="<%= path.startsWith('/admin') ? 'ativo' : '' %> nav__admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+  <main class="conteudo">

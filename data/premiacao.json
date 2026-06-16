@@ -1,0 +1,10 @@
+{
+  "valorAposta": 80,
+  "distribuicao": [
+    { "chave": "primeiro",     "rotulo": "1º Lugar",              "fonte": "geral",       "posicao": 1, "pct": 0.60 },
+    { "chave": "segundo",      "rotulo": "2º Lugar",              "fonte": "geral",       "posicao": 2, "pct": 0.20 },
+    { "chave": "terceiro",     "rotulo": "3º Lugar",              "fonte": "geral",       "posicao": 3, "pct": 0.10 },
+    { "chave": "primeiraFase", "rotulo": "Campeão da 1ª Fase",    "fonte": "faseGrupos",  "posicao": 1, "pct": 0.05 },
+    { "chave": "meio",         "rotulo": "Consolação (meio)",     "fonte": "meio",        "posicao": null, "pct": 0.05 }
+  ]
+}

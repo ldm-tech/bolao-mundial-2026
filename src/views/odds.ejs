@@ -1,0 +1,65 @@
+<%- include('partials/head') %>
+
+<div class="cabecalho-pagina">
+  <span class="kicker">Grupo vs Mercado</span>
+  <h1>Odds por Jogo</h1>
+  <p>
+    A chance de <strong>casa / empate / fora</strong> segundo o nosso grupo (pelos
+    palpites) e segundo o mercado (casas de aposta). Veja onde apostamos contra o mercado.
+  </p>
+</div>
+
+<nav class="pills" aria-label="Fase">
+  <% FASES_ORDEM.forEach(function(f){ %>
+    <a href="/odds?fase=<%= f %>" class="<%= faseFiltro === f ? 'ativo' : '' %>"><%= FASE_LABEL[f] %></a>
+  <% }); %>
+</nav>
+
+<div class="odds-legenda">
+  <span><i class="pt pt--casa"></i> Casa</span>
+  <span><i class="pt pt--empate"></i> Empate</span>
+  <span><i class="pt pt--fora"></i> Fora</span>
+</div>
+
+<%
+function barra(p) {
+  return '<div class="odds-barra">'
+    + '<span class="seg seg--casa" style="width:' + p.casa + '%">' + p.casa + '%</span>'
+    + '<span class="seg seg--empate" style="width:' + p.empate + '%">' + p.empate + '%</span>'
+    + '<span class="seg seg--fora" style="width:' + p.fora + '%">' + p.fora + '%</span>'
+    + '</div>';
+}
+%>
+
+<% if (lista.length === 0) { %><p class="vazio">Nenhum jogo nesta fase.</p><% } %>
+
+<% lista.forEach(function(item){ var j = item.jogo; %>
+  <article class="odds-card">
+    <div class="odds-card__times">
+      <span><%- flag(item.tCasa) %><%= item.tCasa || 'A definir' %></span>
+      <span class="odds-card__x">×</span>
+      <span><%- flag(item.tFora) %><%= item.tFora || 'A definir' %></span>
+      <% if (item.contraMercado) { %><span class="odds-tag">🎯 contra o mercado</span><% } %>
+    </div>
+
+    <% if (item.grupo) { %>
+      <div class="odds-linha"><span class="odds-linha__lbl">Grupo</span><%- barra(item.grupo) %></div>
+      <% if (item.merc) { %>
+        <div class="odds-linha"><span class="odds-linha__lbl">Mercado</span><%- barra(item.merc) %></div>
+      <% } else if (temMercado) { %>
+        <div class="odds-linha odds-linha--vazia"><span class="odds-linha__lbl">Mercado</span><span class="odds-sem">sem odds para este jogo</span></div>
+      <% } %>
+    <% } else { %>
+      <div class="odds-sem" style="text-align:center;padding:0.3rem 0">Chave ainda não definida</div>
+    <% } %>
+  </article>
+<% }); %>
+
+<% if (!temMercado) { %>
+  <p class="vazio" style="font-size:.85rem">
+    As odds de mercado aparecem quando a chave <code>BOLAO_ODDS_API_TOKEN</code> está configurada.
+    Por enquanto, mostramos só a opinião do grupo.
+  </p>
+<% } %>
+
+<%- include('partials/foot') %>

@@ -1,0 +1,14 @@
+<%- include('partials/head') %>
+
+<div class="login-card">
+  <div style="font-size:2rem">🔐</div>
+  <h1>Área do Admin</h1>
+  <p style="color:var(--muted);font-size:.9rem">Lançamento de resultados — somente o organizador.</p>
+  <form method="post" action="/admin/login">
+    <input type="password" name="senha" placeholder="Senha" autofocus required />
+    <% if (erro) { %><div class="erro"><%= erro %></div><% } %>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+
+<%- include('partials/foot') %>
