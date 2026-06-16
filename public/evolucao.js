@@ -23,7 +23,7 @@
   async function desenha() {
     const el = document.getElementById('evo-grafico');
     if (!el) return;
-    const todos = el.dataset.todos === '1'; // modo familia: mostra todos (sem pins)
+    const todos = el.dataset.todos === '1'; // modo "todos": mostra todos (sem pins)
     let url;
     let idsParaCor;
     if (todos) {

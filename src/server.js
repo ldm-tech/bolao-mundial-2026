@@ -53,7 +53,7 @@ function construirPremios(db, geral, faseGrupos) {
   return { premios: publicos, pool };
 }
 
-const NOME_BOLAO = process.env.NOME_BOLAO || 'Bolão Pedreira & Amigos 2026';
+const NOME_BOLAO = process.env.NOME_BOLAO || 'Bolão Mundial 2026';
 
 const emProducao = process.env.NODE_ENV === 'production';
 

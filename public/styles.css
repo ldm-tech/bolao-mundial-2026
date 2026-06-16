@@ -785,7 +785,7 @@ input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-c
   .admin-jogo { grid-template-columns: 1.8rem 1fr auto 1fr; font-size: 0.9rem; }
 }
 
-/* ---------------- Ranking 102 (Pedreira) ---------------- */
+/* ---------------- Ranking grande (busca + prêmios) ---------------- */
 .premio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: 1rem 0; }
 .premio-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
   padding: .7rem .9rem; display: flex; align-items: center; gap: .6rem; }
@@ -804,7 +804,7 @@ input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-c
 .marca__logo { width: 40px; height: 40px; object-fit: contain; display: block;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
 
-/* ---------------- Botao de feedback -> Linear (so dominio LDM) ---------------- */
+/* ---------------- Botao de feedback (opcional, gate por dominio) ---------------- */
 .fb-botao {
   position: fixed; left: 16px; bottom: 16px; z-index: 60;
   display: inline-flex; align-items: center; gap: .4rem;
