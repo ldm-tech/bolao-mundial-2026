@@ -12,6 +12,7 @@ import {
   listaParticipantes,
 } from './participantes.js';
 import { salvaPalpitesJogador, lePalpitesJogador } from './palpites-admin.js';
+import { salvaJogo, removeJogo, listaJogos } from './jogos-admin.js';
 import {
   rankingGeral,
   rankingFaseGrupos,
@@ -585,6 +586,74 @@ app.post('/admin/palpites', exigeAdmin, (req, res) => {
     );
   }
   return res.redirect(`/admin/palpites?jogador=${jogadorId}&salvou=1`);
+});
+
+// ---- Admin: Jogos (fixtures) ----
+
+app.get('/admin/jogos', exigeAdmin, (req, res) => {
+  const todosJogos = listaJogos(db);
+
+  // Agrupa por fase (na ordem canônica), inclui apenas fases com jogos
+  const mapaFases = new Map();
+  for (const f of FASES_ORDEM) mapaFases.set(f, []);
+  for (const j of todosJogos) {
+    if (mapaFases.has(j.fase)) mapaFases.get(j.fase).push(j);
+    else {
+      // fase desconhecida: agrupa num bucket próprio
+      if (!mapaFases.has(j.fase)) mapaFases.set(j.fase, []);
+      mapaFases.get(j.fase).push(j);
+    }
+  }
+  const jogosPorFase = [...mapaFases.entries()]
+    .filter(([, jogos]) => jogos.length > 0)
+    .map(([fase, jogos]) => ({
+      fase,
+      label: FASE_LABEL[fase] || fase,
+      jogos,
+    }));
+
+  res.render('admin-jogos', {
+    jogosPorFase,
+    selecoes: selecoesCanonicas(),
+    FASE_LABEL,
+    FASES_ORDEM,
+    salvou: req.query.salvou === '1',
+    removeu: req.query.removeu === '1',
+    erro: req.query.erro ? decodeURIComponent(req.query.erro) : null,
+  });
+});
+
+app.post('/admin/jogos', exigeAdmin, (req, res) => {
+  const dados = {
+    numero:    req.body.numero,
+    fase:      req.body.fase,
+    grupo:     req.body.grupo,
+    data:      req.body.data,
+    hora:      req.body.hora,
+    cidade:    req.body.cidade,
+    pais:      req.body.pais,
+    time_casa: req.body.time_casa,
+    time_fora: req.body.time_fora,
+  };
+
+  const r = salvaJogo(db, dados);
+  if (!r.ok) {
+    return res.redirect(
+      `/admin/jogos?erro=${encodeURIComponent(r.erro)}`,
+    );
+  }
+  return res.redirect('/admin/jogos?salvou=1');
+});
+
+app.post('/admin/jogos/:numero/remover', exigeAdmin, (req, res) => {
+  const numero = parseInt(req.params.numero, 10);
+  const r = removeJogo(db, numero);
+  if (!r.ok) {
+    return res.redirect(
+      `/admin/jogos?erro=${encodeURIComponent(r.erro)}`,
+    );
+  }
+  return res.redirect('/admin/jogos?removeu=1');
 });
 
 app.use((req, res) => res.status(404).render('404'));

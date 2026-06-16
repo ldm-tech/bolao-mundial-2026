@@ -93,6 +93,10 @@ export function getDb() {
 
 // migracoes leves para bancos criados antes de novas colunas existirem
 function migra(db) {
+  const colsJogos = db.prepare('PRAGMA table_info(jogos)').all().map((c) => c.name);
+  // Fase 6: coluna grupo para exibição na listagem (A..L para jogos de grupos)
+  if (!colsJogos.includes('grupo')) db.exec('ALTER TABLE jogos ADD COLUMN grupo TEXT');
+
   const cols = db.prepare('PRAGMA table_info(resultados)').all().map((c) => c.name);
   if (!cols.includes('penaltis_casa')) db.exec('ALTER TABLE resultados ADD COLUMN penaltis_casa INTEGER');
   if (!cols.includes('penaltis_fora')) db.exec('ALTER TABLE resultados ADD COLUMN penaltis_fora INTEGER');
