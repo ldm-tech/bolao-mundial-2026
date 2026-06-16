@@ -23,7 +23,10 @@ screenshots/
 !docs/**/*.png
 !public/*.png
 
-# segredos do deploy (senha admin, tokens) — lidos pelo update.sh, nunca commitar
+# segredos do deploy e da raiz (senha admin, tokens) — nunca commitar
+.env
+.env.*
+!.env.example
 deploy/.env
 deploy/.env.*
 !deploy/.env.example

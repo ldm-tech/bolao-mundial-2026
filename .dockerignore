@@ -1,13 +1,38 @@
+# Dependências instaladas no host — a imagem roda "npm ci" internamente
 node_modules
+
+# Banco SQLite (volume em runtime — não vai para a imagem)
 data/*.db
 data/*.db-wal
 data/*.db-shm
-planilhas
+
+# Os arquivos abaixo SÃO copiados para a imagem (necessários pelo seed):
+# data/seed-exemplo.json
+# data/fixture-base.json
+# data/premiacao.json
+# exemplo/
+
+# Metadados do repositório e ferramentas de dev
 .git
 .gitignore
 .gitattributes
+.claude
 .playwright-mcp
+
+# Documentação interna (não necessária em runtime)
 docs
+README.md
+
+# Planilhas com dados pessoais dos participantes
+planilhas
+
+# Arquivos de ambiente — o compose usa .env via env_file
+.env
+.env.*
+!.env.example
+
+# Logs e artefatos de teste
+*.log
+screenshots
 *.png
 !public/*.png
-*.log

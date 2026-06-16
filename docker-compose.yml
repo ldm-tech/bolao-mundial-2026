@@ -1,0 +1,24 @@
+# docker-compose simples para o Bolão Mundial 2026.
+# Para rodar: docker compose up
+# Para rodar em segundo plano: docker compose up -d
+#
+# O banco SQLite fica em ./data (volume montado), persistindo entre reinícios.
+# Na primeira execução, o seed popula jogos e participantes de exemplo.
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      # persiste o banco SQLite entre reinícios e deploys
+      - ./data:/data
+    env_file:
+      # crie .env a partir de .env.example e ajuste os valores
+      - path: .env
+        required: false
+    environment:
+      # valores padrão (sobrescritos pelo .env se ele existir)
+      PORT: 3000
+      BOLAO_DB: /data/bolao.db
+    restart: unless-stopped
