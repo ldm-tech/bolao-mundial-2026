@@ -178,6 +178,9 @@ a { color: inherit; }
   gap: 0.5rem;
   padding: 1rem 1.1rem 0.6rem;
 }
+/* corpo do painel: dá respiro lateral ao conteúdo (forms, grids, tabelas) */
+.painel__corpo { padding: 0.2rem 1.1rem 1.1rem; }
+.painel__corpo > .admin-grid { margin-top: 0.2rem; }
 .painel__titulo h2 {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.5rem;

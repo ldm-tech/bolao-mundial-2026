@@ -11,28 +11,30 @@
 
 <%- include('partials/admin-nav', { abaAtiva: 'palpites' }) %>
 
-<%-- Seletor de participante --%>
+<%# Seletor de participante %>
 <section class="painel">
   <div class="painel__titulo">
     <h2>Participante</h2>
   </div>
-  <form method="get" action="/admin/palpites" style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
-    <select name="jogador" style="flex:1;min-width:180px;max-width:340px">
-      <option value="">— escolha um participante —</option>
-      <% participantes.forEach(function(p){ %>
-        <option value="<%= p.id %>" <%= jogador && jogador.id === p.id ? 'selected' : '' %>><%= p.nome_exib %></option>
-      <% }); %>
-    </select>
-    <button class="btn" type="submit">Ver / Editar palpites</button>
-    <% if (jogador) { %>
-      <a href="/jogador/<%= jogador.id %>" class="btn btn--ghost" target="_blank" rel="noopener">Ver ficha pública</a>
-    <% } %>
-  </form>
+  <div class="painel__corpo">
+    <form method="get" action="/admin/palpites" style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+      <select name="jogador" style="flex:1;min-width:180px;max-width:340px">
+        <option value="">— escolha um participante —</option>
+        <% participantes.forEach(function(p){ %>
+          <option value="<%= p.id %>" <%= jogador && jogador.id === p.id ? 'selected' : '' %>><%= p.nome_exib %></option>
+        <% }); %>
+      </select>
+      <button class="btn" type="submit">Ver / Editar palpites</button>
+      <% if (jogador) { %>
+        <a href="/jogador/<%= jogador.id %>" class="btn btn--ghost" target="_blank" rel="noopener">Ver ficha pública</a>
+      <% } %>
+    </form>
+  </div>
 </section>
 
 <% if (jogador) { %>
 
-<%- /* datalist de seleções para os campos de mata-mata */ %>
+<%# datalist de seleções para os campos de mata-mata %>
 <datalist id="selecoes">
   <% selecoes.forEach(function(s){ %><option value="<%= s %>"></option><% }); %>
 </datalist>
@@ -40,16 +42,17 @@
 <form method="post" action="/admin/palpites">
   <input type="hidden" name="jogador_id" value="<%= jogador.id %>" />
 
-  <%- /* Jogos por fase */ %>
+  <%# Jogos por fase %>
   <% jogosPorFase.forEach(function(grupo){ %>
     <section class="painel" style="margin-top:1rem">
       <div class="painel__titulo">
         <h2><%= grupo.label %></h2>
         <span class="chip"><%= grupo.jogos.length %> jogo<%= grupo.jogos.length !== 1 ? 's' : '' %></span>
       </div>
+      <div class="painel__corpo">
 
       <% if (grupo.ehGrupos) { %>
-        <%- /* GRUPOS: só gols */ %>
+        <%# GRUPOS: só gols %>
         <div class="admin-grid">
           <% grupo.jogos.forEach(function(j){ const p = porJogo.get(j.numero) || {}; %>
             <div class="admin-jg">
@@ -71,7 +74,7 @@
         </div>
 
       <% } else { %>
-        <%- /* MATA-MATA: times + gols + pênaltis */ %>
+        <%# MATA-MATA: times + gols + pênaltis %>
         <div class="admin-grid">
           <% grupo.jogos.forEach(function(j){ const p = porJogo.get(j.numero) || {}; %>
             <div style="background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:0.6rem 0.7rem">
@@ -113,38 +116,42 @@
           <% }); %>
         </div>
       <% } %>
+
+      </div>
     </section>
   <% }); %>
 
-  <%- /* Especiais */ %>
+  <%# Especiais %>
   <section class="painel" style="margin-top:1rem">
     <div class="painel__titulo">
       <h2>🌟 Palpites Especiais</h2>
     </div>
-    <div class="admin-times" style="grid-template-columns:1fr 1fr 1fr 1fr;max-width:760px">
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Artilheiro</label>
-        <input type="text" name="artilheiro"
-          value="<%= especiais.artilheiro || '' %>"
-          placeholder="Nome do artilheiro (texto livre)" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Campeão</label>
-        <input type="text" name="campeao" list="selecoes"
-          value="<%= especiais.campeao || '' %>"
-          placeholder="Seleção campeã" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Finalista 1</label>
-        <input type="text" name="finalista_1" list="selecoes"
-          value="<%= especiais.finalista_1 || '' %>"
-          placeholder="Seleção finalista" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Finalista 2</label>
-        <input type="text" name="finalista_2" list="selecoes"
-          value="<%= especiais.finalista_2 || '' %>"
-          placeholder="Seleção finalista" />
+    <div class="painel__corpo">
+      <div class="admin-times" style="grid-template-columns:1fr 1fr 1fr 1fr;max-width:760px">
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Artilheiro</label>
+          <input type="text" name="artilheiro"
+            value="<%= especiais.artilheiro || '' %>"
+            placeholder="Nome do artilheiro (texto livre)" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Campeão</label>
+          <input type="text" name="campeao" list="selecoes"
+            value="<%= especiais.campeao || '' %>"
+            placeholder="Seleção campeã" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Finalista 1</label>
+          <input type="text" name="finalista_1" list="selecoes"
+            value="<%= especiais.finalista_1 || '' %>"
+            placeholder="Seleção finalista" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Finalista 2</label>
+          <input type="text" name="finalista_2" list="selecoes"
+            value="<%= especiais.finalista_2 || '' %>"
+            placeholder="Seleção finalista" />
+        </div>
       </div>
     </div>
   </section>

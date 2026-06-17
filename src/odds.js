@@ -108,14 +108,12 @@ export async function sincronizaOdds(db, fetchFn = fetch) {
   const idx = indicePorPar(db);
   const agora = new Date().toISOString();
 
-  // 1a passagem: coleta todos os dados de rede (async, fora da transacao sincrona)
-  const linhas = [];
+  // 1a passagem: seleciona os eventos elegiveis (pre/in que casam com os nossos
+  // jogos). Jogos encerrados (post) sao pulados — ja tem resultado, odds nao importam.
+  const elegiveis = [];
   for (const ev of (sb && sb.events) || []) {
     const comp = ev.competitions && ev.competitions[0];
-    const stType = ev.status && ev.status.type;
-    const state = stType && stType.state; // 'pre' | 'in' | 'post'
-    // Busca odds so de jogos que ainda nao terminaram (pre ou em andamento).
-    // Jogos encerrados (post) raramente tem odds atualizadas, e economiza requisicoes.
+    const state = ev.status && ev.status.type && ev.status.type.state; // 'pre' | 'in' | 'post'
     if (!comp || state === 'post') continue;
 
     const comps = comp.competitors || [];
@@ -130,22 +128,30 @@ export async function sincronizaOdds(db, fetchFn = fetch) {
     const entry = idx.get([hIso, aIso].sort().join('-'));
     if (!entry) continue;
 
-    const mesmoMando = entry.homeCode === hIso;
-
-    let summary;
-    try {
-      summary = await (await fetchFn(SUMMARY + ev.id)).json();
-    } catch (e) {
-      continue; // sem summary, pula
-    }
-
-    const p = probsDeMercado(summary, home.team.id, mesmoMando);
-    if (!p) continue; // sem pickcenter, pula
-
-    linhas.push({ jogo_numero: entry.numero, prob_casa: p.pCasa, prob_empate: p.pEmpate, prob_fora: p.pFora, atualizado_em: agora });
+    elegiveis.push({ id: ev.id, homeId: home.team.id, mesmoMando: entry.homeCode === hIso, numero: entry.numero });
   }
 
-  // 2a passagem: grava tudo num unico tx sincrono (better-sqlite3 nao aceita async)
+  // 2a passagem: busca os summaries em LOTES paralelos (rapido — sequencial levava
+  // ~20s p/ a Copa toda; em lotes cai p/ poucos segundos, e as odds aparecem logo).
+  const linhas = [];
+  const LOTE = 8;
+  for (let i = 0; i < elegiveis.length; i += LOTE) {
+    const res = await Promise.all(
+      elegiveis.slice(i, i + LOTE).map(async (e) => {
+        try {
+          const summary = await (await fetchFn(SUMMARY + e.id)).json();
+          const p = probsDeMercado(summary, e.homeId, e.mesmoMando);
+          if (!p) return null;
+          return { jogo_numero: e.numero, prob_casa: p.pCasa, prob_empate: p.pEmpate, prob_fora: p.pFora, atualizado_em: agora };
+        } catch (e) {
+          return null; // sem summary/odds, pula
+        }
+      }),
+    );
+    for (const r of res) if (r) linhas.push(r);
+  }
+
+  // 3a passagem: grava tudo num unico tx sincrono (better-sqlite3 nao aceita async)
   const stmt = upsertOdds(db);
   const tx = db.transaction(() => {
     for (const row of linhas) stmt.run(row);

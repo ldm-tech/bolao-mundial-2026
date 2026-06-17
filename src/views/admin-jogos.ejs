@@ -12,91 +12,95 @@
 
 <%- include('partials/admin-nav', { abaAtiva: 'jogos' }) %>
 
-<%- /* datalist de seleções para os campos de times */ %>
+<%# datalist de seleções para os campos de times %>
 <datalist id="selecoes">
   <% selecoes.forEach(function(s){ %><option value="<%= s %>"></option><% }); %>
 </datalist>
 
-<%- /* datalist de fases */ %>
+<%# datalist de fases %>
 <datalist id="fases-lista">
   <% FASES_ORDEM.forEach(function(f){ %><option value="<%= f %>"><%= FASE_LABEL[f] || f %></option><% }); %>
 </datalist>
 
-<%- /* Formulário de criação / edição de jogo */ %>
+<%# Formulário de criação / edição de jogo %>
 <section class="painel">
   <div class="painel__titulo">
     <h2>Adicionar / Editar Jogo</h2>
     <span style="font-size:.8rem;color:var(--muted)">Preencha o número de um jogo existente para editá-lo</span>
   </div>
-  <form method="post" action="/admin/jogos">
-    <div class="admin-times" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem;align-items:end">
+  <div class="painel__corpo">
+    <form method="post" action="/admin/jogos">
+      <div class="admin-times" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem;align-items:end">
 
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Número <span style="color:var(--danger)">*</span></label>
-        <input type="number" name="numero" min="1" required placeholder="Ex: 1"
-          style="width:100%" inputmode="numeric" />
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Número <span style="color:var(--danger)">*</span></label>
+          <input type="number" name="numero" min="1" required placeholder="Ex: 1"
+            style="width:100%" inputmode="numeric" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Fase <span style="color:var(--danger)">*</span></label>
+          <input type="text" name="fase" list="fases-lista" required placeholder="grupos"
+            style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Grupo <small style="font-weight:400">(A–L)</small></label>
+          <input type="text" name="grupo" placeholder="A" maxlength="2"
+            style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Data</label>
+          <input type="date" name="data" style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Hora</label>
+          <input type="time" name="hora" style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Cidade</label>
+          <input type="text" name="cidade" placeholder="Ex: São Paulo"
+            style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">País sede</label>
+          <input type="text" name="pais" placeholder="Ex: Brasil"
+            style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Time mandante</label>
+          <input type="text" name="time_casa" list="selecoes"
+            placeholder="Seleção mandante" style="width:100%" />
+        </div>
+
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Time visitante</label>
+          <input type="text" name="time_fora" list="selecoes"
+            placeholder="Seleção visitante" style="width:100%" />
+        </div>
+
       </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Fase <span style="color:var(--danger)">*</span></label>
-        <input type="text" name="fase" list="fases-lista" required placeholder="grupos"
-          style="width:100%" />
+      <div class="barra-acoes" style="margin-top:.6rem">
+        <button class="btn" type="submit">💾 Salvar jogo</button>
+        <span style="font-size:.8rem;color:var(--muted)">
+          Se o número já existir, os dados serão atualizados.
+        </span>
       </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Grupo <small style="font-weight:400">(A–L)</small></label>
-        <input type="text" name="grupo" placeholder="A" maxlength="2"
-          style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Data</label>
-        <input type="date" name="data" style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Hora</label>
-        <input type="time" name="hora" style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Cidade</label>
-        <input type="text" name="cidade" placeholder="Ex: São Paulo"
-          style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">País sede</label>
-        <input type="text" name="pais" placeholder="Ex: Brasil"
-          style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Time mandante</label>
-        <input type="text" name="time_casa" list="selecoes"
-          placeholder="Seleção mandante" style="width:100%" />
-      </div>
-
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Time visitante</label>
-        <input type="text" name="time_fora" list="selecoes"
-          placeholder="Seleção visitante" style="width:100%" />
-      </div>
-
-    </div>
-    <div class="barra-acoes" style="margin-top:.6rem">
-      <button class="btn" type="submit">💾 Salvar jogo</button>
-      <span style="font-size:.8rem;color:var(--muted)">
-        Se o número já existir, os dados serão atualizados.
-      </span>
-    </div>
-  </form>
+    </form>
+  </div>
 </section>
 
-<%- /* Lista de jogos agrupada por fase */ %>
+<%# Lista de jogos agrupada por fase %>
 <% if (jogosPorFase.length === 0) { %>
   <section class="painel" style="margin-top:1rem">
-    <p style="color:var(--muted);padding:.5rem 0">Nenhum jogo cadastrado ainda. Use o formulário acima para adicionar.</p>
+    <div class="painel__corpo">
+      <p style="color:var(--muted);padding:.5rem 0">Nenhum jogo cadastrado ainda. Use o formulário acima para adicionar.</p>
+    </div>
   </section>
 <% } else { %>
   <% jogosPorFase.forEach(function(grupo){ %>
@@ -105,7 +109,7 @@
         <h2><%= grupo.label %></h2>
         <span class="chip"><%= grupo.jogos.length %> jogo<%= grupo.jogos.length !== 1 ? 's' : '' %></span>
       </div>
-      <div style="overflow-x:auto">
+      <div class="painel__corpo" style="overflow-x:auto">
         <table class="tabela">
           <thead>
             <tr>
@@ -124,46 +128,29 @@
             <% grupo.jogos.forEach(function(j){ %>
               <tr>
                 <td style="text-align:center;font-weight:700"><%= j.numero %></td>
-                <td><%= j.grupo || '<span style="color:var(--muted)">—</span>' %></td>
+                <td><%= j.grupo || '—' %></td>
+                <td><%= j.data ? j.data.split('-').reverse().join('/') : '—' %></td>
+                <td><%= j.hora || '—' %></td>
+                <td><%= j.cidade || '—' %></td>
+                <td><%= j.pais || '—' %></td>
                 <td>
-                  <% if (j.data) { %>
-                    <%= j.data.split('-').reverse().join('/') %>
-                  <% } else { %>
-                    <span style="color:var(--muted)">—</span>
-                  <% } %>
-                </td>
-                <td><%= j.hora || '<span style="color:var(--muted)">—</span>' %></td>
-                <td><%= j.cidade || '<span style="color:var(--muted)">—</span>' %></td>
-                <td><%= j.pais || '<span style="color:var(--muted)">—</span>' %></td>
-                <td>
-                  <% if (j.time_casa) { %>
-                    <%- flag(j.time_casa) %> <%= j.time_casa %>
-                  <% } else { %>
-                    <span style="color:var(--muted)">A definir</span>
-                  <% } %>
+                  <% if (j.time_casa) { %><%- flag(j.time_casa) %> <%= j.time_casa %><% } else { %><span style="color:var(--muted)">A definir</span><% } %>
                 </td>
                 <td>
-                  <% if (j.time_fora) { %>
-                    <%- flag(j.time_fora) %> <%= j.time_fora %>
-                  <% } else { %>
-                    <span style="color:var(--muted)">A definir</span>
-                  <% } %>
+                  <% if (j.time_fora) { %><%- flag(j.time_fora) %> <%= j.time_fora %><% } else { %><span style="color:var(--muted)">A definir</span><% } %>
                 </td>
                 <td style="text-align:center;white-space:nowrap">
-                  <%- /* Botão de edição rápida: preenche o formulário acima via JS */ %>
-                  <button class="btn btn--ghost" type="button"
+                  <button class="btn btn--ghost btn-editar-jogo" type="button"
                     style="font-size:.8rem;padding:.2rem .6rem"
-                    onclick="preencheFormulario({
-                      numero: <%= j.numero %>,
-                      fase: '<%= j.fase %>',
-                      grupo: '<%= j.grupo || '' %>',
-                      data: '<%= j.data || '' %>',
-                      hora: '<%= j.hora || '' %>',
-                      cidade: '<%= (j.cidade || '').replace(/'/g, \"\\\\'\") %>',
-                      pais: '<%= (j.pais || '').replace(/'/g, \"\\\\'\") %>',
-                      time_casa: '<%= (j.time_casa || '').replace(/'/g, \"\\\\'\") %>',
-                      time_fora: '<%= (j.time_fora || '').replace(/'/g, \"\\\\'\") %>'
-                    })">✏️ Editar</button>
+                    data-numero="<%= j.numero %>"
+                    data-fase="<%= j.fase || '' %>"
+                    data-grupo="<%= j.grupo || '' %>"
+                    data-data="<%= j.data || '' %>"
+                    data-hora="<%= j.hora || '' %>"
+                    data-cidade="<%= j.cidade || '' %>"
+                    data-pais="<%= j.pais || '' %>"
+                    data-time_casa="<%= j.time_casa || '' %>"
+                    data-time_fora="<%= j.time_fora || '' %>">✏️ Editar</button>
                   <form method="post" action="/admin/jogos/<%= j.numero %>/remover" style="display:inline"
                     onsubmit="return confirm('Remover jogo <%= j.numero %>? Isso apaga palpites e resultados associados!')">
                     <button class="btn btn--ghost" type="submit"
@@ -184,22 +171,25 @@
 </form>
 
 <script>
-function preencheFormulario(j) {
-  const form = document.querySelector('form[action="/admin/jogos"]');
-  if (!form) return;
-  form.numero.value    = j.numero;
-  form.fase.value      = j.fase;
-  form.grupo.value     = j.grupo;
-  form.data.value      = j.data;
-  form.hora.value      = j.hora;
-  form.cidade.value    = j.cidade;
-  form.pais.value      = j.pais;
-  form.time_casa.value = j.time_casa;
-  form.time_fora.value = j.time_fora;
-  // rola até o formulário
-  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  form.numero.focus();
-}
+// Botão "Editar": preenche o formulário acima a partir dos data-attributes da linha.
+document.querySelectorAll('.btn-editar-jogo').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var form = document.querySelector('form[action="/admin/jogos"]');
+    if (!form) return;
+    var d = btn.dataset;
+    form.numero.value = d.numero;
+    form.fase.value = d.fase;
+    form.grupo.value = d.grupo;
+    form.data.value = d.data;
+    form.hora.value = d.hora;
+    form.cidade.value = d.cidade;
+    form.pais.value = d.pais;
+    form.time_casa.value = d.time_casa;
+    form.time_fora.value = d.time_fora;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    form.numero.focus();
+  });
+});
 </script>
 
 <%- include('partials/foot') %>

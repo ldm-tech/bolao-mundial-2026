@@ -16,47 +16,49 @@
   <div class="painel__titulo">
     <h2><%= editando ? 'Editar Participante' : 'Novo Participante' %></h2>
   </div>
-  <form method="post" action="/admin/participantes">
-    <% if (editando) { %>
-      <input type="hidden" name="id" value="<%= editando.id %>" />
-    <% } %>
-    <div class="admin-times" style="grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end">
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Nome canônico <span style="color:var(--danger)">*</span></label>
-        <input type="text" name="nome" required placeholder="Ex: João Silva"
-          value="<%= editando ? editando.nome : '' %>" style="width:100%" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">Nome de exibição <small style="font-weight:400">(apelido)</small></label>
-        <input type="text" name="nome_exibicao" placeholder="Ex: João"
-          value="<%= editando ? (editando.nome_exibicao || '') : '' %>" style="width:100%" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">E-mail</label>
-        <input type="email" name="email" placeholder="opcional"
-          value="<%= editando ? (editando.email || '') : '' %>" style="width:100%" />
-      </div>
-      <div>
-        <label style="font-size:.8rem;font-weight:700">WhatsApp</label>
-        <input type="text" name="whatsapp" placeholder="11999990000"
-          value="<%= editando ? (editando.whatsapp || '') : '' %>" style="width:100%" />
-      </div>
+  <div class="painel__corpo">
+    <form method="post" action="/admin/participantes">
       <% if (editando) { %>
-      <div style="display:flex;align-items:center;gap:.4rem;padding-top:1.2rem">
-        <input type="checkbox" name="pago" id="pago-edit" <%= editando.pago ? 'checked' : '' %> />
-        <label for="pago-edit" style="font-size:.9rem">Pagou</label>
+        <input type="hidden" name="id" value="<%= editando.id %>" />
+      <% } %>
+      <div class="admin-times" style="grid-template-columns:1fr 1fr 1fr;gap:.5rem;align-items:end">
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Nome canônico <span style="color:var(--danger)">*</span></label>
+          <input type="text" name="nome" required placeholder="Ex: João Silva"
+            value="<%= editando ? editando.nome : '' %>" style="width:100%" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">Nome de exibição <small style="font-weight:400">(apelido)</small></label>
+          <input type="text" name="nome_exibicao" placeholder="Ex: João"
+            value="<%= editando ? (editando.nome_exibicao || '') : '' %>" style="width:100%" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">E-mail</label>
+          <input type="email" name="email" placeholder="opcional"
+            value="<%= editando ? (editando.email || '') : '' %>" style="width:100%" />
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:700">WhatsApp</label>
+          <input type="text" name="whatsapp" placeholder="11999990000"
+            value="<%= editando ? (editando.whatsapp || '') : '' %>" style="width:100%" />
+        </div>
+        <% if (editando) { %>
+        <div style="display:flex;align-items:center;gap:.4rem;padding-top:1.2rem">
+          <input type="checkbox" name="pago" id="pago-edit" <%= editando.pago ? 'checked' : '' %> />
+          <label for="pago-edit" style="font-size:.9rem">Pagou</label>
+        </div>
+        <% } %>
       </div>
-      <% } %>
-    </div>
-    <div class="barra-acoes" style="margin-top:.6rem">
-      <button class="btn" type="submit">
-        <%= editando ? '💾 Salvar alterações' : '➕ Adicionar participante' %>
-      </button>
-      <% if (editando) { %>
-        <a href="/admin/participantes" class="btn btn--ghost">Cancelar</a>
-      <% } %>
-    </div>
-  </form>
+      <div class="barra-acoes" style="margin-top:.6rem">
+        <button class="btn" type="submit">
+          <%= editando ? '💾 Salvar alterações' : '➕ Adicionar participante' %>
+        </button>
+        <% if (editando) { %>
+          <a href="/admin/participantes" class="btn btn--ghost">Cancelar</a>
+        <% } %>
+      </div>
+    </form>
+  </div>
 </section>
 
 <section class="painel">
@@ -64,6 +66,7 @@
     <h2>Lista de Participantes</h2>
     <span class="chip"><%= participantes.length %></span>
   </div>
+  <div class="painel__corpo">
 
   <% if (participantes.length === 0) { %>
     <p style="color:var(--muted);padding:.5rem 0">Nenhum participante cadastrado ainda.</p>
@@ -78,6 +81,7 @@
       </form>
     </div>
 
+    <div style="overflow-x:auto">
     <table class="tabela">
       <thead>
         <tr>
@@ -93,7 +97,7 @@
         <% participantes.forEach(function(p){ %>
           <tr>
             <td><%= p.nome %></td>
-            <td><%= p.nome_exibicao || '<span style="color:var(--muted)">—</span>' %></td>
+            <td><%= p.nome_exibicao || '—' %></td>
             <td>
               <% if (p.email) { %>
                 <a href="mailto:<%= p.email %>"><%= p.email %></a>
@@ -128,7 +132,10 @@
         <% }); %>
       </tbody>
     </table>
+    </div>
   <% } %>
+
+  </div>
 </section>
 
 <form method="post" action="/admin/logout" style="margin-top:1.5rem">
