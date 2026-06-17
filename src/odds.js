@@ -108,13 +108,13 @@ export async function sincronizaOdds(db, fetchFn = fetch) {
   const idx = indicePorPar(db);
   const agora = new Date().toISOString();
 
-  // 1a passagem: seleciona os eventos elegiveis (pre/in que casam com os nossos
-  // jogos). Jogos encerrados (post) sao pulados — ja tem resultado, odds nao importam.
+  // 1a passagem: seleciona os eventos elegiveis (que casam com os nossos jogos).
+  // Inclui jogos encerrados (post): a ESPN mantem as odds de fechamento, que
+  // aparecem na tela como referencia historica do que o mercado esperava.
   const elegiveis = [];
   for (const ev of (sb && sb.events) || []) {
     const comp = ev.competitions && ev.competitions[0];
-    const state = ev.status && ev.status.type && ev.status.type.state; // 'pre' | 'in' | 'post'
-    if (!comp || state === 'post') continue;
+    if (!comp) continue;
 
     const comps = comp.competitors || [];
     const home = comps.find((c) => c.homeAway === 'home');
