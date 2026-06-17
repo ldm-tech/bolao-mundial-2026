@@ -99,9 +99,11 @@ O banco SQLite fica em `./data/bolao.db`, persistido pelo volume do Docker entre
 
 ```bash
 npm install
-npm run seed     # popula o banco a partir de data/seed-exemplo.json
-npm start        # sobe o servidor em http://localhost:3000
+npm start        # popula o banco (se vazio) e sobe o servidor em http://localhost:3000
 ```
+
+> `npm start` já roda o seed automaticamente. Para apenas subir o servidor sem
+> popular, use `npm run serve`.
 
 Para definir a senha do admin antes do seed:
 
@@ -119,7 +121,8 @@ Se a variável não for definida, o seed gera uma senha aleatória e a imprime n
 
 | Comando | O que faz |
 |---|---|
-| `npm start` | Inicia o servidor (`node src/server.js`) |
+| `npm start` | Popula o banco (se necessário) e inicia o servidor |
+| `npm run serve` | Apenas inicia o servidor (`node src/server.js`), sem seed |
 | `npm run seed` | Popula o banco com os dados de exemplo (`node scripts/seed.js`) |
 | `npm test` | Executa a suíte de testes (`node --test`) |
 

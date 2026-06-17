@@ -1,11 +1,12 @@
 {
-  "name": "bolao-pedreira",
+  "name": "bolao-mundial-2026",
   "version": "1.0.0",
-  "description": "Bolão Pedreira & Amigos 2026",
+  "description": "Bolão da Copa do Mundo 2026 — open-source (Node + Express + SQLite)",
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node scripts/seed.js && node src/server.js",
+    "serve": "node src/server.js",
     "seed": "node scripts/seed.js",
     "test": "node --test"
   },
