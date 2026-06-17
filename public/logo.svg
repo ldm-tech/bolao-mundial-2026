@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" role="img" aria-label="Logo do Bolão">
-  <!-- Bola de futebol dourada (cor do tema: --gold, igual ao botão Admin) -->
+  <!-- Bola de futebol dourada (cor do tema, igual ao botao Admin) -->
   <circle cx="20" cy="20" r="17" fill="#e0a82e" stroke="#b8860b" stroke-width="1.5"/>
-  <!-- Pentágono central -->
+  <!-- Pentagono central -->
   <polygon points="20,10 26,15 24,22 16,22 14,15" fill="#8a6510"/>
   <!-- Segmentos laterais -->
   <polygon points="14,15 8,13 7,20 14,22" fill="#c2891f"/>
   <polygon points="26,15 32,13 33,20 26,22" fill="#c2891f"/>
   <polygon points="16,22 14,29 20,32 26,29 24,22" fill="#c2891f"/>
   <!-- Brilho sutil -->
-  <ellipse cx="15" cy="14" rx="3" ry="2" fill="rgba(255,255,255,0.25)" transform="rotate(-20 15 14)"/>
+  <ellipse cx="15" cy="14" rx="3" ry="2" fill="#ffffff" fill-opacity="0.25" transform="rotate(-20 15 14)"/>
 </svg>

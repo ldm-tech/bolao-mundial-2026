@@ -181,6 +181,16 @@ a { color: inherit; }
 /* corpo do painel: dá respiro lateral ao conteúdo (forms, grids, tabelas) */
 .painel__corpo { padding: 0.2rem 1.1rem 1.1rem; }
 .painel__corpo > .admin-grid { margin-top: 0.2rem; }
+/* dentro do painel, a barra de ações não usa o gradiente sticky da página */
+.painel__corpo .barra-acoes { position: static; background: none; }
+/* rodapé de ações do painel: faixa full-width (estoura o padding do corpo p/ ir
+   de ponta a ponta da caixa), separada por uma borda sutil */
+.painel__corpo .painel__rodape {
+  margin: 0.9rem -1.1rem -1.1rem;
+  padding: 0.8rem 1.1rem;
+  background: var(--cream);
+  border-top: 1px solid var(--line);
+}
 .painel__titulo h2 {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.5rem;
