@@ -1059,3 +1059,48 @@ input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-c
 .curio-traves { margin-top: 0.55rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.55rem; font-size: 0.78rem; color: var(--muted); }
 .curio-traves__lb { font-weight: 700; }
 .curio-trave { white-space: nowrap; }
+
+/* ---------------- Busca + accordion por dia (tela de jogos) ---------------- */
+.jogos-busca { margin: 0 0 1rem; }
+.jogos-busca input {
+  width: 100%;
+  padding: 0.6rem 0.95rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: inherit;
+}
+.jogos-busca input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.jogos-busca__vazio { display: block; margin-top: 0.5rem; color: var(--muted); font-size: 0.85rem; }
+
+.dia { border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); margin-bottom: 0.7rem; overflow: hidden; }
+.dia[open] { box-shadow: var(--shadow); }
+.dia__cab {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1rem;
+  font-weight: 700;
+}
+.dia__cab::-webkit-details-marker { display: none; }
+.dia__cab::before { content: '▸'; color: var(--muted); transition: transform 0.15s ease; }
+.dia[open] .dia__cab::before { transform: rotate(90deg); }
+.dia__data { flex: 1; text-transform: capitalize; }
+.dia__meta { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; }
+.dia__chip { font-size: 0.78rem; color: var(--muted); background: var(--cream); padding: 0.1rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+.dia__jogos { padding: 0 0.7rem 0.7rem; }
+.dia__jogos .jogo-card { margin-bottom: 0.7rem; }
+.dia__jogos .jogo-card:last-child { margin-bottom: 0; }
+
+/* Caixinha "Seus fixados" no card de jogo (palpites das pessoas pinadas) */
+.fixados-jogo {
+  margin: 0 0.9rem 0.7rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  background: rgba(224, 168, 46, 0.08);
+}
+.fixados-jogo__tit { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.45rem; }

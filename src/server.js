@@ -34,6 +34,7 @@ import { bandeira } from './flags.js';
 import { carregaConfig as carregaCfgPremiacao, calculaPremios } from './premiacao.js';
 import { montaArtilheiros } from './artilheiros.js';
 import { leDetalhes, iniciaAgendadorDetalheVivo } from './detalhevivo.js';
+import { agrupaPorDia } from './jogos-view.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -311,7 +312,15 @@ app.get('/jogos', (req, res) => {
     };
   });
 
-  res.render('jogos', { lista, faseFiltro, FASE_LABEL, FASES_ORDEM });
+  // Na fase de grupos (72 jogos) agrupa por dia num accordion; nas demais fases
+  // (poucos jogos) mantém a lista simples.
+  let dias = null;
+  let diaAberto = null;
+  if (faseFiltro === 'grupos') {
+    const hoje = new Date().toISOString().slice(0, 10);
+    ({ dias, diaAberto } = agrupaPorDia(lista, hoje));
+  }
+  res.render('jogos', { lista, dias, diaAberto, faseFiltro, FASE_LABEL, FASES_ORDEM });
 });
 
 // ============================ ADMIN ============================

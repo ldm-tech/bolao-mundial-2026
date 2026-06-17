@@ -1,0 +1,143 @@
+<% var j = item.jogo; var r = item.real;
+   var tCasa = item.timeCasa || (r && r.time_casa) || j.time_casa;
+   var tFora = item.timeFora || (r && r.time_fora) || j.time_fora; %>
+<article class="jogo-card" id="jogo-<%= j.numero %>" data-times="<%= (tCasa || '') + ' ' + (tFora || '') %>">
+  <div class="jogo-card__topo">
+    <div class="jogo-card__fase">
+      <% if (item.estadoVivo === 'ao_vivo') { %>
+        <span class="selo-vivo"><span class="ponto-vivo"></span>AO VIVO</span>
+      <% } else if (item.estadoVivo === 'parcial') { %>
+        <span class="selo-parcial">PARCIAL</span>
+      <% } %>
+      <%= FASE_LABEL[j.fase] %>
+    </div>
+    <div class="jogo-card__meta">
+      Jogo <%= j.numero %><% if (j.data) { %> · <%= j.data.split('-').reverse().join('/') %><% } %><% if (j.hora) { %> · <%= j.hora %><% } %><% if (j.cidade) { %> · <%= j.cidade %><% } %>
+    </div>
+  </div>
+
+  <div class="jogo-card__placar">
+    <div class="jogo-card__time jogo-card__time--casa">
+      <% if (tCasa) { %><%- flag(tCasa) %><% } %><%= tCasa || 'A definir' %>
+    </div>
+    <% if (r) { %>
+      <div class="jogo-card__gols">
+        <span><%= r.gols_casa %> : <%= r.gols_fora %></span>
+        <% if (item.estadoVivo === 'ao_vivo' && item.detalhe) { var _d = item.detalhe;
+           var _ini = _d.status === 'PAUSED' ? 'Intervalo' : (_d.minuto != null ? _d.minuto + "'" : ''); %>
+          <span class="jogo-card__minuto relogio-vivo" data-min="<%= _d.minuto == null ? '' : _d.minuto %>" data-ac="<%= _d.acrescimo || 0 %>" data-status="<%= _d.status || '' %>"><%= _ini %></span>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="jogo-card__gols jogo-card__gols--vazio">vs</div>
+    <% } %>
+    <div class="jogo-card__time">
+      <% if (tFora) { %><%- flag(tFora) %><% } %><%= tFora || 'A definir' %>
+    </div>
+  </div>
+
+  <% if (item.detalhe && (item.detalhe.golsCasa.length || item.detalhe.golsFora.length)) { var dt = item.detalhe;
+     function autor(g) { var min = g.min + (g.ac ? '+' + g.ac : '') + "'";
+       var marca = g.tipo === 'PENALTY' ? ' (pên)' : (g.tipo === 'OWN' ? ' (c.)' : ''); return { min: min, txt: g.nome + marca }; } %>
+    <div class="jogo-card__autores">
+      <div class="autores autores--casa">
+        <% dt.golsCasa.forEach(function(g){ var a = autor(g); %><span class="autor">⚽ <span class="autor__min"><%= a.min %></span> <%= a.txt %></span><% }); %>
+      </div>
+      <div class="autores autores--fora">
+        <% dt.golsFora.forEach(function(g){ var a = autor(g); %><span class="autor"><%= a.txt %> <span class="autor__min"><%= a.min %></span> ⚽</span><% }); %>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (item.detalhe && ((item.detalhe.cartoesCasa || []).length || (item.detalhe.cartoesFora || []).length)) { var dcc = item.detalhe;
+     function carta(c) { return { min: c.min + (c.ac ? '+' + c.ac : '') + "'", nome: c.nome, cls: c.cor === 'V' ? 'cartao__ic--v' : 'cartao__ic--a' }; } %>
+    <div class="jogo-card__autores jogo-card__cartoes">
+      <div class="autores autores--casa">
+        <% (dcc.cartoesCasa || []).forEach(function(c){ var a = carta(c); %><span class="autor"><span class="cartao__ic <%= a.cls %>"></span> <span class="autor__min"><%= a.min %></span> <%= a.nome %></span><% }); %>
+      </div>
+      <div class="autores autores--fora">
+        <% (dcc.cartoesFora || []).forEach(function(c){ var a = carta(c); %><span class="autor"><%= a.nome %> <span class="autor__min"><%= a.min %></span> <span class="cartao__ic <%= a.cls %>"></span></span><% }); %>
+      </div>
+    </div>
+  <% } %>
+
+  <% var cur = item.detalhe; if (cur && (cur.estat || (cur.traves || []).length)) { %>
+    <div class="jogo-card__curiosidades">
+      <% if (cur.estat) { var ec = cur.estat.casa, ef = cur.estat.fora;
+         var METR = [
+           { k: 'posse', lb: 'Posse', barra: true },
+           { k: 'chutes', lb: 'Finalizações' },
+           { k: 'noGol', lb: 'No gol' },
+           { k: 'defesas', lb: 'Defesas' },
+           { k: 'escanteios', lb: 'Escanteios' },
+         ]; %>
+        <div class="curio-stats">
+          <% METR.forEach(function(m){ var ca = ec[m.k], fo = ef[m.k];
+               if (ca == null && fo == null) return;
+               var suf = m.k === 'posse' ? '%' : ''; %>
+            <div class="curio-stat">
+              <span class="curio-stat__n curio-stat__n--casa"><%= ca == null ? '–' : ca %><%= suf %></span>
+              <span class="curio-stat__lb"><%= m.lb %></span>
+              <span class="curio-stat__n curio-stat__n--fora"><%= fo == null ? '–' : fo %><%= suf %></span>
+              <% if (m.barra && ca != null && fo != null) { var tot = ca + fo || 1; %>
+                <span class="curio-barra"><span class="curio-barra__casa" style="width: <%= Math.round(ca / tot * 100) %>%"></span></span>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      <% if ((cur.traves || []).length) { %>
+        <div class="curio-traves">
+          <span class="curio-traves__lb">⛔ Na trave</span>
+          <% cur.traves.forEach(function(t){ %><span class="curio-trave"><span class="autor__min"><%= t.min != null ? t.min + "'" : '' %></span> <%= t.nome %></span><% }); %>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <% if (r && r.penaltis_casa != null && r.penaltis_fora != null) { %>
+    <div class="jogo-card__penaltis">🥅 Pênaltis <strong><%= r.penaltis_casa %> x <%= r.penaltis_fora %></strong></div>
+  <% } %>
+
+  <% if (item.secador && (item.secador.cravando.length || item.secador.disputa.length)) { var s = item.secador; %>
+    <div class="secador">
+      <div class="secador__titulo"><span aria-hidden="true">💨</span> Quem secar <span class="secador__sub">— ainda dá pra cravar o placar exato</span></div>
+      <% if (s.cravando.length) { %>
+        <div class="secador__sec">🎯 Cravando agora (<%= r.gols_casa %>×<%= r.gols_fora %>) · <strong>35 pts</strong> se acabar assim</div>
+        <div class="secador__chips">
+          <% s.cravando.forEach(function(c){ %><span class="secador-chip secador-chip--ok"><%= c.nome %></span><% }); %>
+        </div>
+      <% } %>
+      <% if (s.disputa.length) { %>
+        <div class="secador__sec">⏳ Ainda na disputa</div>
+        <div class="secador__chips">
+          <% s.disputa.forEach(function(d){ var partes=[];
+               if (d.faltamCasa>0) partes.push(d.faltamCasa+' ⚽ '+(tCasa||'casa'));
+               if (d.faltamFora>0) partes.push(d.faltamFora+' ⚽ '+(tFora||'fora')); %>
+            <span class="secador-chip"><%= d.nome %> · <strong><%= d.alvoCasa %>×<%= d.alvoFora %></strong>
+              <span class="secador-falta">(falta<%= d.faltam>1?'m':'' %> <%= partes.join(' e ') %>)</span></span>
+          <% }); %>
+        </div>
+        <% if (s.restante > 0) { %><div class="secador__mais">+<%= s.restante %> ainda podem cravar</div><% } %>
+      <% } %>
+    </div>
+  <% } %>
+
+  <details class="palpites-lista" data-key="<%= j.numero %>">
+    <summary>ver palpites de todos (<%= item.palpites.length %>)</summary>
+    <div class="palpites-grid">
+      <% item.palpites.forEach(function(p){ %>
+        <div class="palpite-item <%= r && p.placar ? ('acerto-' + p.placar) : '' %>" data-nome="<%= p.nome %>">
+          <div class="palpite-item__nome"><%= p.nome %></div>
+          <% if (j.fase !== 'grupos') { %>
+            <div class="palpite-item__times"><%- flag(p.timeCasa) %><%= p.timeCasa || '?' %> × <%- flag(p.timeFora) %><%= p.timeFora || '?' %></div>
+          <% } %>
+          <div class="palpite-item__placar">
+            <span><%= p.gols %><% if (p.pen) { %> <span class="pen-mini">(pên <%= p.pen %>)</span><% } %></span>
+            <% if (r) { %><span class="palpite-item__pts">+<%= p.pontos %></span><% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </details>
+</article>
