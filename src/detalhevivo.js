@@ -210,17 +210,24 @@ export async function sincronizaEspn(db, fetchFn = fetch, dates = COPA) {
     if (!entry) continue;
     const mesmoMando = entry.homeCode === hIso;
     const status = statusEspn(stType);
-    // placar do scoreboard -> resultados_ao_vivo (orientado pelo nosso mando)
+    // placar BASE do scoreboard (orientado pelo nosso mando). Atencao: o
+    // scoreboard as vezes ATRASA um gol em relacao ao summary (keyEvents) — o gol
+    // ja aparece nos autores mas o placar ainda nao virou. Por isso, quando
+    // buscamos o summary, derivamos o placar da CONTAGEM de gols (mesma fonte dos
+    // autores): assim placar e autores nunca divergem e a animacao dispara certo.
     const hS = parseInt(home.score, 10);
     const aS = parseInt(away.score, 10);
-    if (Number.isInteger(hS) && Number.isInteger(aS)) {
-      upScore.run(entry.numero, mesmoMando ? hS : aS, mesmoMando ? aS : hS, status, agora);
-    }
+    let pCasa = mesmoMando ? hS : aS;
+    let pFora = mesmoMando ? aS : hS;
     const ant = detalhe[entry.numero];
     // ja encerrado E ja com as curiosidades (estatisticas) capturadas -> nao
-    // refaz o summary. Se faltam (captura antiga, anterior a feature), re-busca
-    // 1x p/ completar — vale tanto p/ cartoes quanto p/ estatisticas/traves.
-    if (state === 'post' && ant && ant.status === 'FINISHED' && ant.estat !== undefined) continue;
+    // refaz o summary; o placar final ja esta gravado (so reforca pelo scoreboard).
+    if (state === 'post' && ant && ant.status === 'FINISHED' && ant.estat !== undefined) {
+      if (Number.isInteger(pCasa) && Number.isInteger(pFora)) {
+        upScore.run(entry.numero, pCasa, pFora, status, agora);
+      }
+      continue;
+    }
     const pm = parseMinuto(ev.status.displayClock);
     let gols = { golsCasa: (ant && ant.golsCasa) || [], golsFora: (ant && ant.golsFora) || [] };
     let cartoes = { cartoesCasa: (ant && ant.cartoesCasa) || [], cartoesFora: (ant && ant.cartoesFora) || [] };
@@ -234,6 +241,18 @@ export async function sincronizaEspn(db, fetchFn = fetch, dates = COPA) {
       traves = travesDoSummary(sum);
     } catch (e) {
       /* mantem autores/cartoes/curiosidades anteriores */
+    }
+    // placar = contagem de gols do summary (consistente com os autores; o gol
+    // contra a ESPN credita ao time beneficiado, entao a contagem fica certa). So
+    // sobrescreve o scoreboard quando o summary trouxe algum gol.
+    const cCasa = gols.golsCasa.length;
+    const cFora = gols.golsFora.length;
+    if (cCasa || cFora) {
+      pCasa = cCasa;
+      pFora = cFora;
+    }
+    if (Number.isInteger(pCasa) && Number.isInteger(pFora)) {
+      upScore.run(entry.numero, pCasa, pFora, status, agora);
     }
     detalhe[entry.numero] = {
       numero: entry.numero,
