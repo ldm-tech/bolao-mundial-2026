@@ -272,12 +272,12 @@ Os dados que vêm no projeto (`data/seed-exemplo.json`) são **completamente fic
 > As imagens abaixo usam os **dados de exemplo** que já vêm no projeto (participantes fictícios).
 
 ### Ranking
-Pódio, classificação completa e gráfico de evolução.
+Pódio, classificação completa, participantes fixados (📌) e gráfico de evolução dos fixados.
 
 ![Ranking](docs/screenshots/ranking.png)
 
 ### Jogos
-Placar ao vivo, autores dos gols, cartões, estatísticas e "quem secar".
+Agrupados por dia (accordion) com busca por seleção. Placar ao vivo, autores dos gols, cartões, estatísticas, caixinha "Seus fixados" e "quem secar".
 
 ![Jogos](docs/screenshots/jogos.png)
 
