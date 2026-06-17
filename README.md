@@ -269,8 +269,35 @@ Os dados que vêm no projeto (`data/seed-exemplo.json`) são **completamente fic
 
 ## Capturas de tela
 
-<!-- TODO: adicionar screenshots -->
-<!-- Sugestão: docs/screenshots/ranking.png, jogos-ao-vivo.png, admin.png -->
+> As imagens abaixo usam os **dados de exemplo** que já vêm no projeto (participantes fictícios).
+
+### Ranking
+Pódio, classificação completa e gráfico de evolução.
+
+![Ranking](docs/screenshots/ranking.png)
+
+### Jogos
+Placar ao vivo, autores dos gols, cartões, estatísticas e "quem secar".
+
+![Jogos](docs/screenshots/jogos.png)
+
+### Odds por jogo
+Probabilidades segundo o grupo (palpites) e segundo o mercado (ESPN).
+
+![Odds](docs/screenshots/odds.png)
+
+### Artilheiros
+![Artilheiros](docs/screenshots/artilheiros.png)
+
+### Classificados
+![Classificados](docs/screenshots/classificados.png)
+
+### Admin — Participantes e Jogos
+Cadastro de participantes, palpites e jogos, independente de planilha.
+
+![Admin Participantes](docs/screenshots/admin-participantes.png)
+
+![Admin Jogos](docs/screenshots/admin-jogos.png)
 
 ---
 
