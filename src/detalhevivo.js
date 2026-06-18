@@ -283,8 +283,9 @@ export function leDetalhes(db = getDb()) {
   }
 }
 
-// Agendador: a cada 60s busca minuto + autores na ESPN (gratis, sem token).
-export function iniciaAgendadorDetalheVivo(db = getDb(), { intervaloMs = 60000 } = {}) {
+// Agendador: a cada 30s busca placar + minuto + autores na ESPN (gratis, sem
+// token). 30s (e nao 60s) p/ o gol aparecer mais rapido — o ciclo leva ~2s.
+export function iniciaAgendadorDetalheVivo(db = getDb(), { intervaloMs = 30000 } = {}) {
   let backfillFeito = false;
   const ciclo = async () => {
     try {
