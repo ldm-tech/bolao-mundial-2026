@@ -82,9 +82,15 @@ app.use(
   }),
 );
 
+// versao do app: muda a cada deploy. Em producao vem do hash do commit
+// (BOLAO_APP_VERSION); sem isso, usa o instante do boot. O cliente recarrega a
+// pagina quando ela muda (auto-refresh.js).
+const APP_VERSION = process.env.BOLAO_APP_VERSION || String(Date.now());
+
 // variaveis disponiveis em todas as views
 app.use((req, res, next) => {
   res.locals.NOME_BOLAO = NOME_BOLAO;
+  res.locals.appVersao = APP_VERSION;
   res.locals.isAdmin = !!req.session.admin;
   res.locals.path = req.path;
   // helper de bandeira para as views: devolve <img> ou '' se nao mapear

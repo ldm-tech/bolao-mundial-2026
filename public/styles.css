@@ -1104,3 +1104,21 @@ input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-c
   background: rgba(224, 168, 46, 0.08);
 }
 .fixados-jogo__tit { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.45rem; }
+
+/* Banner discreto de "nova versão disponível" (deploy) */
+.novo-deploy {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: var(--pitch-700);
+  color: var(--paper);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
