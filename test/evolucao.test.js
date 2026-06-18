@@ -23,11 +23,15 @@ test('evolucaoFixados: serie acumulada por jogo computado, so dos ids pedidos', 
   const bruno = r.series.find((s) => s.id === 2);
   assert.deepEqual(ana.acum, [35, 70]); // crava + crava
   assert.deepEqual(bruno.acum, [10, 45]); // resultado(10) -> +crava(35)
+  // Ana sempre na frente (mais pontos) -> 1º; Bruno -> 2º
+  assert.deepEqual(ana.pos, [1, 1]);
+  assert.deepEqual(bruno.pos, [2, 2]);
+  assert.equal(r.total, 2);
 });
 
 test('evolucaoFixados: sem ids -> vazio', async () => {
   process.env.BOLAO_DB = ':memory:';
   const { getDb } = await import('../src/db.js');
   const { evolucaoFixados } = await import('../src/ranking.js');
-  assert.deepEqual(evolucaoFixados(getDb(), []), { jogos: [], series: [] });
+  assert.deepEqual(evolucaoFixados(getDb(), []), { jogos: [], series: [], total: 0 });
 });

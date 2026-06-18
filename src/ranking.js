@@ -138,12 +138,13 @@ export function primeiroJogoAoVivo(db = getDb()) {
   return achado;
 }
 
-// Evolucao da pontuacao (acumulada, jogo a jogo) dos jogadores `ids`. Usada pelo
-// grafico dos fixados no ranking. So conta jogos JA computados (com placar),
-// somando placar + bonus de mata-mata por jogo. Especiais ficam de fora (nao sao
-// por-jogo). Retorna { jogos: [{numero, casa, fora}], series: [{id, nome, acum}] }.
+// Evolucao da POSICAO no ranking (jogo a jogo) dos jogadores `ids`. A cada jogo
+// JA computado, ranqueia TODOS os participantes pela pontuacao acumulada (placar
+// + bonus de mata-mata; especiais ficam de fora, como na contagem por-jogo) e
+// registra a posicao de cada `id`. Tambem devolve `acum` (pontos) p/ o tooltip.
+// Retorna { jogos:[{numero,casa,fora}], series:[{id,nome,acum,pos}], total }.
 export function evolucaoFixados(db = getDb(), ids = []) {
-  if (!ids || !ids.length) return { jogos: [], series: [] };
+  if (!ids || !ids.length) return { jogos: [], series: [], total: 0 };
   const efetivos = resultadosEfetivos(db);
   const jogosTab = new Map(
     db.prepare('SELECT numero, fase, time_casa, time_fora FROM jogos').all().map((j) => [j.numero, j]),
@@ -157,26 +158,47 @@ export function evolucaoFixados(db = getDb(), ids = []) {
     return { numero: n, casa: j.time_casa || null, fora: j.time_fora || null };
   });
 
-  const series = [];
-  for (const id of ids) {
-    const jog = db
-      .prepare("SELECT id, COALESCE(NULLIF(nome_exibicao, ''), nome) AS nome FROM jogadores WHERE id = ?")
-      .get(id);
-    if (!jog) continue;
-    const palpites = new Map(
-      db.prepare('SELECT * FROM palpites WHERE jogador_id = ?').all(id).map((p) => [p.jogo_numero, p]),
-    );
-    let acc = 0;
-    const acum = computados.map((n) => {
-      const real = efetivos.get(n);
-      const j = jogosTab.get(n);
-      const p = palpites.get(n);
-      acc += pontosPlacar(p, real) + (j ? bonusMataMata(j.fase, p, real).total : 0);
-      return acc;
-    });
-    series.push({ id: jog.id, nome: jog.nome, acum });
+  // a posicao de um fixado depende de TODOS — carrega todos os jogadores+palpites.
+  // nome_exibicao existe no Pedreira, nao na familia — detecta a coluna.
+  const temExib = db.prepare('PRAGMA table_info(jogadores)').all().some((c) => c.name === 'nome_exibicao');
+  const colNome = temExib ? "COALESCE(NULLIF(nome_exibicao, ''), nome)" : 'nome';
+  const todos = db.prepare(`SELECT id, ${colNome} AS nome FROM jogadores`).all();
+  const palpPorJog = new Map(todos.map((j) => [j.id, new Map()]));
+  for (const p of db.prepare('SELECT * FROM palpites').all()) {
+    const m = palpPorJog.get(p.jogador_id);
+    if (m) m.set(p.jogo_numero, p);
   }
-  return { jogos, series };
+  const acc = new Map(todos.map((j) => [j.id, 0]));
+  const accSerie = new Map(ids.map((id) => [id, []]));
+  const posSerie = new Map(ids.map((id) => [id, []]));
+
+  for (const n of computados) {
+    const real = efetivos.get(n);
+    const j = jogosTab.get(n);
+    for (const jog of todos) {
+      const p = palpPorJog.get(jog.id).get(n);
+      acc.set(jog.id, acc.get(jog.id) + pontosPlacar(p, real) + (j ? bonusMataMata(j.fase, p, real).total : 0));
+    }
+    const ord = todos.map((jog) => ({ id: jog.id, a: acc.get(jog.id) })).sort((x, y) => y.a - x.a);
+    const posMap = new Map();
+    let pos = 0;
+    let prev = null;
+    ord.forEach((o, idx) => {
+      if (o.a !== prev) { pos = idx + 1; prev = o.a; }
+      posMap.set(o.id, pos);
+    });
+    for (const id of ids) {
+      if (!acc.has(id)) continue;
+      accSerie.get(id).push(acc.get(id));
+      posSerie.get(id).push(posMap.get(id));
+    }
+  }
+
+  const nomePorId = new Map(todos.map((j) => [j.id, j.nome]));
+  const series = ids
+    .filter((id) => nomePorId.has(id))
+    .map((id) => ({ id, nome: nomePorId.get(id), acum: accSerie.get(id), pos: posSerie.get(id) }));
+  return { jogos, series, total: todos.length };
 }
 
 // Le os resultados efetivos + os especiais reais.
