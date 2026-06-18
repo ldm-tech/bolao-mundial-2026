@@ -1008,6 +1008,9 @@ input:focus { outline: 2px solid var(--pitch-500); outline-offset: 1px; border-c
 .evo { padding: 0.2rem 0.9rem 0.9rem; }
 .evo__titulo { font-weight: 800; font-size: 0.9rem; color: var(--pitch-900, #0a3326); margin: 0.5rem 0 0.5rem; }
 .evo__dica { font-weight: 400; font-size: 0.72rem; color: var(--muted); }
+.evo__toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin-left: 0.4rem; vertical-align: middle; }
+.evo__toggle button { border: none; background: transparent; padding: 0.15rem 0.6rem; font: inherit; font-size: 0.72rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+.evo__toggle button.ativo { background: var(--pitch-700); color: var(--paper); }
 .evo__wrap { position: relative; }
 .evo__svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
 .evo__grid { stroke: rgba(18, 40, 28, 0.1); stroke-width: 1; }
