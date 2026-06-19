@@ -67,19 +67,22 @@ function inicioUTC(data, hora) {
 }
 
 // Estado de exibicao do placar de um jogo: 'ao_vivo' | 'parcial' | null.
-// Prioridade: (1) status da API (fato); (2) relogio — se ja comecou e ainda
-// esta na janela, e ao vivo PARA QUALQUER FONTE (manual inclusive); (3) fora da
-// janela, placar da API vira 'parcial' (aguarda o oficial) e o manual vira
-// definitivo (null, sem selo).
+// Prioridade:
+//  (1) status da API (fato): IN_PLAY/PAUSED = ao vivo; FINISHED = parcial.
+//  (2) placar MANUAL e SEMPRE definitivo (null): o admin informou de proposito,
+//      entao nao volta a "ao vivo" so porque o relogio ainda esta na janela.
+//  (3) ESPN sem status conclusivo: usa o relogio — dentro da janela = ao vivo,
+//      fora = parcial (aguarda o placar oficial).
 const JANELA_JOGO_MS = 150 * 60 * 1000; // ~2h30
 export function estadoDoPlacar(fonte, status, data, hora, agoraMs = Date.now()) {
   if (fonte === 'nenhum') return null; // sem placar
   if (status === 'IN_PLAY' || status === 'PAUSED') return 'ao_vivo'; // API: ao vivo
   if (status === 'FINISHED') return 'parcial'; // API encerrou, aguarda o oficial
+  if (fonte === 'manual') return null; // placar do admin e definitivo (nao depende do relogio)
   const inicio = inicioUTC(data, hora);
   const naJanela = inicio != null && agoraMs >= inicio && agoraMs <= inicio + JANELA_JOGO_MS;
-  if (naJanela) return 'ao_vivo'; // relogio vale tambem p/ placar manual
-  return fonte === 'ao_vivo' ? 'parcial' : null; // manual fora da janela = definitivo
+  if (naJanela) return 'ao_vivo'; // ESPN sem status, mas dentro da janela
+  return 'parcial'; // ESPN fora da janela: aguarda o oficial
 }
 
 // Estado ao vivo: assinatura (para o auto-refresh) + contagens (para o banner).

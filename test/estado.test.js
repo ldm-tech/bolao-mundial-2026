@@ -26,8 +26,10 @@ test('muito depois da janela (API travada) -> parcial', () => {
   assert.equal(estadoDoPlacar('ao_vivo', 'TIMED', '2026-06-12', '22:00', INICIO + 200 * MIN), 'parcial');
 });
 
-test('placar manual dentro da janela -> ao vivo (relogio vale p/ manual)', () => {
-  assert.equal(estadoDoPlacar('manual', null, '2026-06-12', '22:00', INICIO + 10 * MIN), 'ao_vivo');
+test('placar manual e sempre definitivo, mesmo dentro da janela do relogio', () => {
+  // o admin informou de proposito: nao volta a "ao vivo" so porque o relogio
+  // ainda esta na janela do jogo (era a causa do "ressuscitar" ao atualizar).
+  assert.equal(estadoDoPlacar('manual', null, '2026-06-12', '22:00', INICIO + 10 * MIN), null);
 });
 
 test('placar manual fora da janela -> definitivo (null, sem selo)', () => {
