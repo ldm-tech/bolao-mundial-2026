@@ -52,8 +52,9 @@
       const n = normaliza(tr.dataset.nome);
       const pinned = pinSet.has(n);
       const casaBusca = !termo || n.includes(termo);
-      // fixados saem da lista principal (aparecem so no topo); demais respeitam a busca
-      tr.hidden = pinned || !casaBusca;
+      // fixados aparecem no topo E continuam na lista principal (realcados);
+      // todos respeitam a busca
+      tr.hidden = !casaBusca;
       tr.classList.toggle('is-pinned', pinned);
       if (pinned) {
         const clone = document.createElement('tr');
